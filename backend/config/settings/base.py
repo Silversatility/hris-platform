@@ -36,6 +36,7 @@ INSTALLED_APPS = [
     # local
     "apps.users",
     "apps.employees",
+    "apps.leave_management",
 ]
 
 MIDDLEWARE = [

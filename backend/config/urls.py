@@ -20,4 +20,5 @@ urlpatterns = [
     path("api/auth/token/", TokenObtainPairView.as_view(), name="token_obtain_pair"),
     path("api/auth/token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
     path("api/", include("apps.employees.urls")),
+    path("api/", include("apps.leave_management.urls")),
 ]
