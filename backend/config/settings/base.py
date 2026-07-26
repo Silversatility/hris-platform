@@ -35,6 +35,7 @@ INSTALLED_APPS = [
     "django_celery_beat",
     # local
     "apps.users",
+    "apps.employees",
 ]
 
 MIDDLEWARE = [
