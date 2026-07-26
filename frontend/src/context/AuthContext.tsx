@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react'
 import { apiClient } from '../lib/apiClient'
-import { clearTokens, setTokens } from '../lib/authStorage'
+import { clearTokens, getRefreshToken, setTokens } from '../lib/authStorage'
 
 interface EmployeeSummary {
   id: number
@@ -22,8 +22,9 @@ export interface CurrentUser {
 interface AuthContextValue {
   user: CurrentUser | null
   isLoading: boolean
+  isLoggingOut: boolean
   login: (email: string, password: string) => Promise<void>
-  logout: () => void
+  logout: () => Promise<void>
 }
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined)
@@ -31,6 +32,7 @@ const AuthContext = createContext<AuthContextValue | undefined>(undefined)
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<CurrentUser | null>(null)
   const [isLoading, setIsLoading] = useState(true)
+  const [isLoggingOut, setIsLoggingOut] = useState(false)
 
   async function fetchCurrentUser() {
     try {
@@ -51,13 +53,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     await fetchCurrentUser()
   }
 
-  function logout() {
-    clearTokens()
-    setUser(null)
+  async function logout() {
+    setIsLoggingOut(true)
+    const refreshToken = getRefreshToken()
+    try {
+      if (refreshToken) {
+        await apiClient.post('/api/auth/logout/', { refresh: refreshToken })
+      }
+    } catch {
+      // Best-effort: even if blacklisting fails (e.g. already expired,
+      // network down), still clear local tokens so the user isn't stuck.
+    } finally {
+      clearTokens()
+      setUser(null)
+      setIsLoggingOut(false)
+    }
   }
 
   return (
-    <AuthContext.Provider value={{ user, isLoading, login, logout }}>
+    <AuthContext.Provider value={{ user, isLoading, isLoggingOut, login, logout }}>
       {children}
     </AuthContext.Provider>
   )

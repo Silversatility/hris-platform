@@ -1,5 +1,6 @@
 import { NavLink, Outlet, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import FullScreenLoader from './FullScreenLoader'
 import {
   BuildingIcon,
   CalendarIcon,
@@ -26,11 +27,11 @@ function initials(firstName: string, lastName: string, email: string) {
 }
 
 function Layout() {
-  const { user, logout } = useAuth()
+  const { user, logout, isLoggingOut } = useAuth()
   const navigate = useNavigate()
 
-  function handleLogout() {
-    logout()
+  async function handleLogout() {
+    await logout()
     navigate('/login')
   }
 
@@ -41,6 +42,7 @@ function Layout() {
 
   return (
     <div className="flex min-h-screen bg-[#f4efe2]">
+      {isLoggingOut && <FullScreenLoader />}
       <aside className="flex w-64 flex-col bg-gradient-to-b from-[#1c2f4d] to-[#0d1b30] text-[#dbe3ef]">
         <div className="flex items-center gap-2 px-6 py-6">
           <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#dbe3ef] text-sm font-bold text-[#1c2f4d]">
@@ -87,8 +89,9 @@ function Layout() {
             </div>
             <button
               onClick={handleLogout}
+              disabled={isLoggingOut}
               title="Log out"
-              className="rounded-full p-2 text-[#b7c2d6] hover:bg-white/10 hover:text-white"
+              className="rounded-full p-2 text-[#b7c2d6] hover:bg-white/10 hover:text-white disabled:cursor-not-allowed disabled:opacity-60"
             >
               <LogoutIcon className="h-4.5 w-4.5" />
             </button>

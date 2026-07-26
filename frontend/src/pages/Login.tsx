@@ -1,5 +1,6 @@
 import { useState, type FormEvent } from 'react'
 import { useNavigate } from 'react-router-dom'
+import FullScreenLoader from '../components/FullScreenLoader'
 import { useAuth } from '../context/AuthContext'
 
 function Login() {
@@ -26,6 +27,7 @@ function Login() {
 
   return (
     <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-[#f4efe2]">
+      {isSubmitting && <FullScreenLoader />}
       <div className="absolute inset-0 [clip-path:polygon(100%_0,100%_100%,0_100%)] bg-gradient-to-br from-[#1c2f4d] to-[#0d1b30]" />
 
       <div className="relative z-10 m-6 w-full max-w-sm rounded-3xl bg-[#faf6ec] p-12 text-center shadow-2xl">
