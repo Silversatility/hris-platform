@@ -1,6 +1,7 @@
 import pytest
 from django.urls import reverse
 from rest_framework.test import APIClient
+from rest_framework_simplejwt.tokens import RefreshToken
 
 from apps.employees.models import Department, Employee
 from apps.users.models import User
@@ -52,3 +53,28 @@ def test_me_returns_employee_summary_when_linked():
     employee_data = response.json()["employee"]
     assert employee_data["employee_id"] == "EMP-0001"
     assert employee_data["department"] == "Engineering"
+
+
+def test_logout_blacklists_refresh_token():
+    user = User.objects.create_user(email="jane@example.com", password="s3cret-pass")
+    refresh = RefreshToken.for_user(user)
+    client = APIClient()
+    client.force_authenticate(user)
+
+    response = client.post(reverse("logout"), {"refresh": str(refresh)})
+    assert response.status_code == 205
+
+    refresh_response = APIClient().post(
+        reverse("token_refresh"), {"refresh": str(refresh)}
+    )
+    assert refresh_response.status_code == 401
+
+
+def test_logout_requires_refresh_token():
+    user = User.objects.create_user(email="jane@example.com", password="s3cret-pass")
+    client = APIClient()
+    client.force_authenticate(user)
+
+    response = client.post(reverse("logout"), {})
+
+    assert response.status_code == 400
