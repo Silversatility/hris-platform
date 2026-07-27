@@ -78,3 +78,102 @@ def test_logout_requires_refresh_token():
     response = client.post(reverse("logout"), {})
 
     assert response.status_code == 400
+
+
+def test_can_update_own_name_and_contact_info():
+    department = Department.objects.create(name="Engineering", code="ENG")
+    user = User.objects.create_user(email="jane@example.com", password="s3cret-pass")
+    Employee.objects.create(
+        user=user,
+        employee_id="EMP-0001",
+        department=department,
+        job_title="Software Engineer",
+        employment_type=Employee.EmploymentType.FULL_TIME,
+        hire_date="2026-01-15",
+    )
+    client = APIClient()
+    client.force_authenticate(user)
+
+    response = client.patch(
+        reverse("me"),
+        {
+            "first_name": "Jane",
+            "last_name": "Doe",
+            "phone_number": "+15550001111",
+            "personal_email": "jane.personal@example.com",
+        },
+    )
+
+    assert response.status_code == 200
+    data = response.json()
+    assert data["first_name"] == "Jane"
+    assert data["last_name"] == "Doe"
+    user.refresh_from_db()
+    user.employee.refresh_from_db()
+    assert user.employee.phone_number == "+15550001111"
+    assert user.employee.personal_email == "jane.personal@example.com"
+
+
+def test_self_update_cannot_change_employment_fields():
+    department = Department.objects.create(name="Engineering", code="ENG")
+    user = User.objects.create_user(email="jane@example.com", password="s3cret-pass")
+    employee = Employee.objects.create(
+        user=user,
+        employee_id="EMP-0001",
+        department=department,
+        job_title="Software Engineer",
+        employment_type=Employee.EmploymentType.FULL_TIME,
+        hire_date="2026-01-15",
+    )
+    client = APIClient()
+    client.force_authenticate(user)
+
+    response = client.patch(reverse("me"), {"job_title": "CEO", "salary": "999999.00"})
+
+    assert response.status_code == 200
+    employee.refresh_from_db()
+    assert employee.job_title == "Software Engineer"
+    assert employee.salary is None
+
+
+def test_change_password_success():
+    user = User.objects.create_user(email="jane@example.com", password="old-pass-123")
+    client = APIClient()
+    client.force_authenticate(user)
+
+    response = client.post(
+        reverse("change-password"),
+        {"old_password": "old-pass-123", "new_password": "brand-new-pass-456"},
+    )
+
+    assert response.status_code == 204
+    user.refresh_from_db()
+    assert user.check_password("brand-new-pass-456")
+
+
+def test_change_password_rejects_wrong_old_password():
+    user = User.objects.create_user(email="jane@example.com", password="old-pass-123")
+    client = APIClient()
+    client.force_authenticate(user)
+
+    response = client.post(
+        reverse("change-password"),
+        {"old_password": "wrong-password", "new_password": "brand-new-pass-456"},
+    )
+
+    assert response.status_code == 400
+    user.refresh_from_db()
+    assert user.check_password("old-pass-123")
+
+
+def test_change_password_rejects_weak_new_password():
+    user = User.objects.create_user(email="jane@example.com", password="old-pass-123")
+    client = APIClient()
+    client.force_authenticate(user)
+
+    response = client.post(
+        reverse("change-password"),
+        {"old_password": "old-pass-123", "new_password": "12345678"},
+    )
+
+    assert response.status_code == 400
