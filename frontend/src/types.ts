@@ -18,6 +18,9 @@ export interface EmployeeRecord {
   phone_number: string
   emergency_contact_name: string
   emergency_contact_phone: string
+  bank_name: string
+  bank_account_number: string
+  bank_account_holder_name: string
 }
 
 export interface DepartmentOption {

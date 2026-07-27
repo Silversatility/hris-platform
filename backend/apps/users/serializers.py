@@ -42,6 +42,9 @@ class MeUpdateSerializer(serializers.Serializer):
     phone_number = serializers.CharField(required=False, allow_blank=True)
     emergency_contact_name = serializers.CharField(required=False, allow_blank=True)
     emergency_contact_phone = serializers.CharField(required=False, allow_blank=True)
+    bank_name = serializers.CharField(required=False, allow_blank=True)
+    bank_account_number = serializers.CharField(required=False, allow_blank=True)
+    bank_account_holder_name = serializers.CharField(required=False, allow_blank=True)
 
     def update(self, instance, validated_data):
         user_fields = [f for f in ("first_name", "last_name") if f in validated_data]
@@ -57,6 +60,9 @@ class MeUpdateSerializer(serializers.Serializer):
                 "phone_number",
                 "emergency_contact_name",
                 "emergency_contact_phone",
+                "bank_name",
+                "bank_account_number",
+                "bank_account_holder_name",
             )
             employee_fields = [f for f in employee_field_names if f in validated_data]
             for field in employee_fields:

@@ -202,6 +202,26 @@ def test_staff_can_update_employee(staff_user, employee):
     assert employee.job_title == "Staff Engineer"
 
 
+def test_staff_can_set_employee_bank_details(staff_user, employee):
+    client = APIClient()
+    client.force_authenticate(staff_user)
+
+    response = client.patch(
+        reverse("employee-detail", args=[employee.id]),
+        {
+            "bank_name": "BPI",
+            "bank_account_number": "009988776655",
+            "bank_account_holder_name": "Jane Santos",
+        },
+    )
+
+    assert response.status_code == 200
+    employee.refresh_from_db()
+    assert employee.bank_name == "BPI"
+    assert employee.bank_account_number == "009988776655"
+    assert employee.bank_account_holder_name == "Jane Santos"
+
+
 def test_staff_can_delete_employee(staff_user, employee):
     client = APIClient()
     client.force_authenticate(staff_user)

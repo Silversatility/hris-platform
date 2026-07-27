@@ -114,6 +114,36 @@ def test_can_update_own_name_and_contact_info():
     assert user.employee.personal_email == "jane.personal@example.com"
 
 
+def test_can_update_own_bank_details():
+    department = Department.objects.create(name="Engineering", code="ENG")
+    user = User.objects.create_user(email="jane@example.com", password="s3cret-pass")
+    Employee.objects.create(
+        user=user,
+        employee_id="EMP-0001",
+        department=department,
+        job_title="Software Engineer",
+        employment_type=Employee.EmploymentType.FULL_TIME,
+        hire_date="2026-01-15",
+    )
+    client = APIClient()
+    client.force_authenticate(user)
+
+    response = client.patch(
+        reverse("me"),
+        {
+            "bank_name": "BDO",
+            "bank_account_number": "001234567890",
+            "bank_account_holder_name": "Jane Doe",
+        },
+    )
+
+    assert response.status_code == 200
+    user.employee.refresh_from_db()
+    assert user.employee.bank_name == "BDO"
+    assert user.employee.bank_account_number == "001234567890"
+    assert user.employee.bank_account_holder_name == "Jane Doe"
+
+
 def test_self_update_cannot_change_employment_fields():
     department = Department.objects.create(name="Engineering", code="ENG")
     user = User.objects.create_user(email="jane@example.com", password="s3cret-pass")

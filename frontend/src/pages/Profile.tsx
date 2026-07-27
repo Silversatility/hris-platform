@@ -57,6 +57,9 @@ interface ProfileFormValues {
   phone_number: string
   emergency_contact_name: string
   emergency_contact_phone: string
+  bank_name: string
+  bank_account_number: string
+  bank_account_holder_name: string
 }
 
 function Profile() {
@@ -72,6 +75,9 @@ function Profile() {
     phone_number: '',
     emergency_contact_name: '',
     emergency_contact_phone: '',
+    bank_name: '',
+    bank_account_number: '',
+    bank_account_holder_name: '',
   })
   const [profileError, setProfileError] = useState<string | null>(null)
   const [profileSuccess, setProfileSuccess] = useState(false)
@@ -108,6 +114,9 @@ function Profile() {
           phone_number: response.data.phone_number,
           emergency_contact_name: response.data.emergency_contact_name,
           emergency_contact_phone: response.data.emergency_contact_phone,
+          bank_name: response.data.bank_name,
+          bank_account_number: response.data.bank_account_number,
+          bank_account_holder_name: response.data.bank_account_holder_name,
         }))
       })
       .catch(() => setLoadError('Failed to load profile.'))
@@ -382,6 +391,42 @@ function Profile() {
                 </div>
               </div>
             </section>
+
+            {employee && (
+              <section className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-black/5">
+                <h2 className="mb-4 text-sm font-semibold text-[#5a6a85] uppercase">
+                  Banking (for payroll deposit)
+                </h2>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className={labelClass()}>Bank Name</label>
+                    <input
+                      value={profileForm.bank_name}
+                      onChange={(e) => setProfileField('bank_name', e.target.value)}
+                      className={inputClass()}
+                    />
+                  </div>
+                  <div>
+                    <label className={labelClass()}>Account Number</label>
+                    <input
+                      value={profileForm.bank_account_number}
+                      onChange={(e) => setProfileField('bank_account_number', e.target.value)}
+                      className={inputClass()}
+                    />
+                  </div>
+                  <div className="col-span-2">
+                    <label className={labelClass()}>Account Holder Name</label>
+                    <input
+                      value={profileForm.bank_account_holder_name}
+                      onChange={(e) =>
+                        setProfileField('bank_account_holder_name', e.target.value)
+                      }
+                      className={inputClass()}
+                    />
+                  </div>
+                </div>
+              </section>
+            )}
 
             {loadError && <p className="text-sm text-red-500">{loadError}</p>}
             {profileError && <p className="text-sm text-red-500">{profileError}</p>}

@@ -42,6 +42,9 @@ class EmployeeSerializer(serializers.ModelSerializer):
             "phone_number",
             "emergency_contact_name",
             "emergency_contact_phone",
+            "bank_name",
+            "bank_account_number",
+            "bank_account_holder_name",
         ]
 
     def get_full_name(self, obj):
@@ -96,6 +99,9 @@ class EmployeeWriteSerializer(serializers.ModelSerializer):
             "phone_number",
             "emergency_contact_name",
             "emergency_contact_phone",
+            "bank_name",
+            "bank_account_number",
+            "bank_account_holder_name",
         ]
 
     def validate_email(self, value):

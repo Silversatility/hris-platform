@@ -41,6 +41,9 @@ interface FormValues {
   phone_number: string
   emergency_contact_name: string
   emergency_contact_phone: string
+  bank_name: string
+  bank_account_number: string
+  bank_account_holder_name: string
 }
 
 const EMPTY_VALUES: FormValues = {
@@ -61,6 +64,9 @@ const EMPTY_VALUES: FormValues = {
   phone_number: '',
   emergency_contact_name: '',
   emergency_contact_phone: '',
+  bank_name: '',
+  bank_account_number: '',
+  bank_account_holder_name: '',
 }
 
 function valuesFromEmployee(employee: EmployeeRecord): FormValues {
@@ -83,6 +89,9 @@ function valuesFromEmployee(employee: EmployeeRecord): FormValues {
     phone_number: employee.phone_number,
     emergency_contact_name: employee.emergency_contact_name,
     emergency_contact_phone: employee.emergency_contact_phone,
+    bank_name: employee.bank_name,
+    bank_account_number: employee.bank_account_number,
+    bank_account_holder_name: employee.bank_account_holder_name,
   }
 }
 
@@ -147,6 +156,9 @@ function EmployeeFormModal({
       phone_number: values.phone_number,
       emergency_contact_name: values.emergency_contact_name,
       emergency_contact_phone: values.emergency_contact_phone,
+      bank_name: values.bank_name,
+      bank_account_number: values.bank_account_number,
+      bank_account_holder_name: values.bank_account_holder_name,
     }
     if (!isEdit) {
       payload.password = values.password
@@ -386,6 +398,38 @@ function EmployeeFormModal({
               <input
                 value={values.emergency_contact_phone}
                 onChange={(e) => setField('emergency_contact_phone', e.target.value)}
+                className={inputClass()}
+              />
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <h3 className="mb-3 text-xs font-bold tracking-wide text-[#1c2f4d] uppercase">
+            Banking
+          </h3>
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className={labelClass()}>Bank name</label>
+              <input
+                value={values.bank_name}
+                onChange={(e) => setField('bank_name', e.target.value)}
+                className={inputClass()}
+              />
+            </div>
+            <div>
+              <label className={labelClass()}>Account number</label>
+              <input
+                value={values.bank_account_number}
+                onChange={(e) => setField('bank_account_number', e.target.value)}
+                className={inputClass()}
+              />
+            </div>
+            <div className="col-span-2">
+              <label className={labelClass()}>Account holder name</label>
+              <input
+                value={values.bank_account_holder_name}
+                onChange={(e) => setField('bank_account_holder_name', e.target.value)}
                 className={inputClass()}
               />
             </div>

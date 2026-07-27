@@ -48,6 +48,9 @@ class Employee(models.Model):
     phone_number = models.CharField(max_length=30, blank=True)
     emergency_contact_name = models.CharField(max_length=100, blank=True)
     emergency_contact_phone = models.CharField(max_length=30, blank=True)
+    bank_name = models.CharField(max_length=100, blank=True)
+    bank_account_number = models.CharField(max_length=50, blank=True)
+    bank_account_holder_name = models.CharField(max_length=150, blank=True)
 
     class Meta:
         ordering = ["employee_id"]
