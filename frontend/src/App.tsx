@@ -3,6 +3,7 @@ import Layout from './components/Layout'
 import ProtectedRoute from './components/ProtectedRoute'
 import { AuthProvider } from './context/AuthContext'
 import ComingSoon from './pages/ComingSoon'
+import Employees from './pages/Employees'
 import Home from './pages/Home'
 import Login from './pages/Login'
 import NotFound from './pages/NotFound'
@@ -16,7 +17,7 @@ function App() {
           <Route element={<ProtectedRoute />}>
             <Route element={<Layout />}>
               <Route path="/" element={<Home />} />
-              <Route path="/employees" element={<ComingSoon title="Employees" />} />
+              <Route path="/employees" element={<Employees />} />
               <Route path="/departments" element={<ComingSoon title="Departments" />} />
               <Route path="/leave-requests" element={<ComingSoon title="Leave Requests" />} />
               <Route path="/settings" element={<ComingSoon title="Settings" />} />
