@@ -10,9 +10,8 @@ class LeaveTypeSerializer(serializers.ModelSerializer):
 
 
 class LeaveBalanceSerializer(serializers.ModelSerializer):
-    remaining_days = serializers.DecimalField(
-        max_digits=5, decimal_places=1, read_only=True
-    )
+    remaining_days = serializers.DecimalField(max_digits=5, decimal_places=1, read_only=True)
+    leave_type_name = serializers.CharField(source="leave_type.name", read_only=True)
 
     class Meta:
         model = LeaveBalance
@@ -20,6 +19,7 @@ class LeaveBalanceSerializer(serializers.ModelSerializer):
             "id",
             "employee",
             "leave_type",
+            "leave_type_name",
             "year",
             "allocated_days",
             "used_days",
@@ -28,22 +28,31 @@ class LeaveBalanceSerializer(serializers.ModelSerializer):
         read_only_fields = ["used_days"]
 
 
+def _display_name(employee):
+    full_name = f"{employee.user.first_name} {employee.user.last_name}".strip()
+    return full_name or employee.user.email
+
+
 class LeaveRequestSerializer(serializers.ModelSerializer):
-    employee_name = serializers.CharField(source="employee.employee_id", read_only=True)
+    employee_display_name = serializers.SerializerMethodField()
+    leave_type_name = serializers.CharField(source="leave_type.name", read_only=True)
+    reviewed_by_name = serializers.SerializerMethodField()
 
     class Meta:
         model = LeaveRequest
         fields = [
             "id",
             "employee",
-            "employee_name",
+            "employee_display_name",
             "leave_type",
+            "leave_type_name",
             "start_date",
             "end_date",
             "days_requested",
             "reason",
             "status",
             "reviewed_by",
+            "reviewed_by_name",
             "reviewed_at",
             "created_at",
             "updated_at",
@@ -57,6 +66,14 @@ class LeaveRequestSerializer(serializers.ModelSerializer):
             "created_at",
             "updated_at",
         ]
+
+    def get_employee_display_name(self, obj):
+        return _display_name(obj.employee)
+
+    def get_reviewed_by_name(self, obj):
+        if obj.reviewed_by is None:
+            return None
+        return _display_name(obj.reviewed_by)
 
     def validate(self, attrs):
         start_date = attrs.get("start_date", getattr(self.instance, "start_date", None))

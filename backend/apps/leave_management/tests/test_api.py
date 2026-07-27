@@ -154,3 +154,87 @@ def test_employee_can_cancel_own_pending_request(employee, leave_type):
 
     assert response.status_code == 200
     assert response.json()["status"] == "cancelled"
+
+
+def test_list_includes_display_names(manager, employee, leave_type):
+    LeaveRequest.objects.create(
+        employee=employee,
+        leave_type=leave_type,
+        start_date=date(2026, 8, 3),
+        end_date=date(2026, 8, 7),
+    )
+    client = APIClient()
+    client.force_authenticate(manager.user)
+
+    response = client.get(reverse("leave-request-list"))
+
+    result = response.json()["results"][0]
+    assert result["employee_display_name"] == "jane@example.com"
+    assert result["leave_type_name"] == "Vacation"
+    assert result["reviewed_by_name"] is None
+
+
+def test_approve_sets_reviewed_by_name(employee, manager, leave_type, balance):
+    manager.user.first_name = "Mandy"
+    manager.user.last_name = "Ager"
+    manager.user.save()
+    leave_request = LeaveRequest.objects.create(
+        employee=employee,
+        leave_type=leave_type,
+        start_date=date(2026, 8, 3),
+        end_date=date(2026, 8, 7),
+    )
+    client = APIClient()
+    client.force_authenticate(manager.user)
+
+    response = client.post(reverse("leave-request-approve", args=[leave_request.id]))
+
+    assert response.json()["reviewed_by_name"] == "Mandy Ager"
+
+
+@pytest.fixture
+def vp(department):
+    user = User.objects.create_user(email="vp@example.com", password="s3cret-pass")
+    return Employee.objects.create(
+        user=user,
+        employee_id="EMP-0000",
+        department=department,
+        job_title="VP of Engineering",
+        employment_type=Employee.EmploymentType.FULL_TIME,
+        hire_date="2018-01-01",
+    )
+
+
+def test_skip_level_manager_can_approve(employee, manager, vp, leave_type, balance):
+    manager.manager = vp
+    manager.save(update_fields=["manager"])
+    leave_request = LeaveRequest.objects.create(
+        employee=employee,
+        leave_type=leave_type,
+        start_date=date(2026, 8, 3),
+        end_date=date(2026, 8, 7),
+    )
+    client = APIClient()
+    client.force_authenticate(vp.user)
+
+    response = client.post(reverse("leave-request-approve", args=[leave_request.id]))
+
+    assert response.status_code == 200
+    assert response.json()["status"] == "approved"
+
+
+def test_skip_level_manager_sees_request_in_list(employee, manager, vp, leave_type):
+    manager.manager = vp
+    manager.save(update_fields=["manager"])
+    LeaveRequest.objects.create(
+        employee=employee,
+        leave_type=leave_type,
+        start_date=date(2026, 8, 3),
+        end_date=date(2026, 8, 7),
+    )
+    client = APIClient()
+    client.force_authenticate(vp.user)
+
+    response = client.get(reverse("leave-request-list"))
+
+    assert response.json()["count"] == 1

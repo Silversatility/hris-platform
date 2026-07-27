@@ -54,3 +54,24 @@ class Employee(models.Model):
 
     def __str__(self):
         return f"{self.employee_id} - {self.user.email}"
+
+    def get_all_report_ids(self):
+        """
+        IDs of every employee reporting to this one, directly or through the
+        chain of command (a report's report, and so on) -- not just direct
+        reports. Used to let any manager above someone in the org chart
+        approve their leave, not only their immediate manager.
+        """
+        report_ids = set()
+        frontier = {self.id}
+        while frontier:
+            next_frontier = set(
+                Employee.objects.filter(manager_id__in=frontier)
+                .exclude(id__in=report_ids)
+                .values_list("id", flat=True)
+            )
+            if not next_frontier:
+                break
+            report_ids |= next_frontier
+            frontier = next_frontier
+        return report_ids

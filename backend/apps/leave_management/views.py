@@ -44,14 +44,17 @@ class LeaveRequestViewSet(viewsets.ModelViewSet):
         return super().get_permissions()
 
     def get_queryset(self):
-        queryset = LeaveRequest.objects.select_related("employee", "leave_type", "reviewed_by")
+        queryset = LeaveRequest.objects.select_related(
+            "employee", "employee__user", "leave_type", "reviewed_by", "reviewed_by__user"
+        )
         user = self.request.user
         if user.is_staff:
             return queryset
         employee = getattr(user, "employee", None)
         if employee is None:
             return queryset.none()
-        return queryset.filter(Q(employee=employee) | Q(employee__manager=employee))
+        report_ids = employee.get_all_report_ids()
+        return queryset.filter(Q(employee=employee) | Q(employee_id__in=report_ids))
 
     def perform_create(self, serializer):
         serializer.save(employee=self.request.user.employee)
@@ -60,8 +63,11 @@ class LeaveRequestViewSet(viewsets.ModelViewSet):
         if request.user.is_staff:
             return
         reviewer = getattr(request.user, "employee", None)
-        if reviewer is None or leave_request.employee.manager_id != reviewer.id:
-            raise PermissionDenied("Only the employee's manager or HR staff can do this.")
+        if reviewer is None or leave_request.employee_id not in reviewer.get_all_report_ids():
+            raise PermissionDenied(
+                "Only someone above this employee in the chain of command or HR staff "
+                "can do this."
+            )
 
     @action(detail=True, methods=["post"])
     def approve(self, request, pk=None):

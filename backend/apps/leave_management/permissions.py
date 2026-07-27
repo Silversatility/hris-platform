@@ -5,8 +5,9 @@ class CanManageLeaveRequest(BasePermission):
     """
     Staff: full access to everything.
     Everyone else: create requests for themselves; read own requests and
-    requests from their direct reports; no direct edit/delete (use the
-    approve/reject/cancel actions, which enforce the actual business rules).
+    requests from anyone in their chain of command (direct or transitive
+    reports); no direct edit/delete (use the approve/reject/cancel actions,
+    which enforce the actual business rules).
     """
 
     def has_permission(self, request, view):
@@ -25,5 +26,5 @@ class CanManageLeaveRequest(BasePermission):
         if employee is None:
             return False
         return request.method in SAFE_METHODS and (
-            obj.employee_id == employee.id or obj.employee.manager_id == employee.id
+            obj.employee_id == employee.id or obj.employee_id in employee.get_all_report_ids()
         )
