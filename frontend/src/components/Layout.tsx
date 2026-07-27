@@ -9,6 +9,7 @@ import {
   PeopleIcon,
   SearchIcon,
   SettingsIcon,
+  WalletIcon,
 } from './icons'
 
 const NAV_ITEMS = [
@@ -16,6 +17,7 @@ const NAV_ITEMS = [
   { to: '/employees', label: 'Employees', icon: PeopleIcon },
   { to: '/departments', label: 'Departments', icon: BuildingIcon },
   { to: '/leave-requests', label: 'Leave Requests', icon: CalendarIcon },
+  { to: '/payroll', label: 'Payroll', icon: WalletIcon },
   { to: '/settings', label: 'Settings', icon: SettingsIcon },
 ]
 

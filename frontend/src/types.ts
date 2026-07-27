@@ -73,6 +73,96 @@ export interface LeaveRequestRecord {
   updated_at: string
 }
 
+export interface SalesAgentRecord {
+  id: number
+  agent_id: string
+  first_name: string
+  last_name: string
+  full_name: string
+  email: string
+  phone_number: string
+  default_commission_rate: string
+  status: string
+  date_joined: string
+  bank_code: string
+  bank_account_number: string
+  bank_account_holder_name: string
+}
+
+export interface SaleRecord {
+  id: number
+  agent: number
+  agent_display_name: string
+  sale_date: string
+  customer_name: string
+  vehicle_description: string
+  sale_amount: string
+  commission_rate: string
+  commission_amount: string
+  notes: string
+  created_at: string
+}
+
+export interface PayRunRecord {
+  id: number
+  start_date: string
+  end_date: string
+  pay_date: string
+  status: string
+  payslip_count: number
+  commission_payout_count: number
+  created_at: string
+}
+
+export interface PayslipLineItemRecord {
+  id: number
+  payslip: number
+  item_type: string
+  label: string
+  amount: string
+}
+
+export interface PayslipRecord {
+  id: number
+  pay_run: number
+  employee: number
+  employee_display_name: string
+  employee_code: string
+  base_salary: string
+  gross_pay: string
+  total_deductions: string
+  net_pay: string
+  line_items: PayslipLineItemRecord[]
+  is_paid: boolean
+  paid_at: string | null
+  payment_method: string
+  payment_reference: string
+  generated_at: string
+}
+
+export interface CommissionLineItemRecord {
+  id: number
+  payout: number
+  sale: number | null
+  label: string
+  amount: string
+  is_automatic: boolean
+}
+
+export interface CommissionPayoutRecord {
+  id: number
+  pay_run: number
+  agent: number
+  agent_display_name: string
+  line_items: CommissionLineItemRecord[]
+  total_commission: string
+  is_paid: boolean
+  paid_at: string | null
+  payment_method: string
+  payment_reference: string
+  generated_at: string
+}
+
 export interface PaginatedResponse<T> {
   count: number
   next: string | null

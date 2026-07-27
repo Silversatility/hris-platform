@@ -132,6 +132,25 @@ export function TrashIcon({ className }: IconProps) {
   )
 }
 
+export function WalletIcon({ className }: IconProps) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" className={className}>
+      <path
+        d="M3.5 7A1.5 1.5 0 0 1 5 5.5h13A1.5 1.5 0 0 1 19.5 7v10a1.5 1.5 0 0 1-1.5 1.5H5A1.5 1.5 0 0 1 3.5 17V7Z"
+        stroke="currentColor"
+        strokeWidth="1.75"
+      />
+      <path
+        d="M14.5 12.5a1.5 1.5 0 1 0 0-.01"
+        stroke="currentColor"
+        strokeWidth="1.75"
+        strokeLinecap="round"
+      />
+      <path d="M3.5 9h13.75A2.25 2.25 0 0 1 19.5 11.25v1.5" stroke="currentColor" strokeWidth="1.75" />
+    </svg>
+  )
+}
+
 export function LogoutIcon({ className }: IconProps) {
   return (
     <svg viewBox="0 0 24 24" fill="none" className={className}>
