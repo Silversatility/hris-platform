@@ -25,6 +25,14 @@ export interface DepartmentOption {
   name: string
 }
 
+export interface DepartmentRecord {
+  id: number
+  name: string
+  code: string
+  is_active: boolean
+  employee_count: number
+}
+
 export interface PaginatedResponse<T> {
   count: number
   next: string | null
