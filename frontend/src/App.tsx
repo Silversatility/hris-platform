@@ -6,6 +6,7 @@ import ComingSoon from './pages/ComingSoon'
 import Departments from './pages/Departments'
 import Employees from './pages/Employees'
 import Home from './pages/Home'
+import LeaveRequests from './pages/LeaveRequests'
 import Login from './pages/Login'
 import NotFound from './pages/NotFound'
 import Profile from './pages/Profile'
@@ -22,7 +23,7 @@ function App() {
               <Route path="/profile" element={<Profile />} />
               <Route path="/employees" element={<Employees />} />
               <Route path="/departments" element={<Departments />} />
-              <Route path="/leave-requests" element={<ComingSoon title="Leave Requests" />} />
+              <Route path="/leave-requests" element={<LeaveRequests />} />
               <Route path="/settings" element={<ComingSoon title="Settings" />} />
             </Route>
           </Route>

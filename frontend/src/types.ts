@@ -33,6 +33,43 @@ export interface DepartmentRecord {
   employee_count: number
 }
 
+export interface LeaveTypeRecord {
+  id: number
+  name: string
+  code: string
+  is_paid: boolean
+  default_annual_days: string
+}
+
+export interface LeaveBalanceRecord {
+  id: number
+  employee: number
+  leave_type: number
+  leave_type_name: string
+  year: number
+  allocated_days: string
+  used_days: string
+  remaining_days: string
+}
+
+export interface LeaveRequestRecord {
+  id: number
+  employee: number
+  employee_display_name: string
+  leave_type: number
+  leave_type_name: string
+  start_date: string
+  end_date: string
+  days_requested: string
+  reason: string
+  status: string
+  reviewed_by: number | null
+  reviewed_by_name: string | null
+  reviewed_at: string | null
+  created_at: string
+  updated_at: string
+}
+
 export interface PaginatedResponse<T> {
   count: number
   next: string | null
