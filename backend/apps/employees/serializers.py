@@ -7,9 +7,11 @@ from .models import Department, Employee
 
 
 class DepartmentSerializer(serializers.ModelSerializer):
+    employee_count = serializers.IntegerField(read_only=True, default=0)
+
     class Meta:
         model = Department
-        fields = ["id", "name", "code", "is_active"]
+        fields = ["id", "name", "code", "is_active", "employee_count"]
 
 
 class EmployeeSerializer(serializers.ModelSerializer):

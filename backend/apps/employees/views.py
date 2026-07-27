@@ -1,4 +1,6 @@
+from django.db.models import Count, ProtectedError
 from rest_framework import permissions, viewsets
+from rest_framework.exceptions import ValidationError
 
 from .models import Department, Employee
 from .permissions import IsHRAdminOrOwnReadOnly, IsStaffOrReadOnly
@@ -6,10 +8,18 @@ from .serializers import DepartmentSerializer, EmployeeSerializer, EmployeeWrite
 
 
 class DepartmentViewSet(viewsets.ModelViewSet):
-    queryset = Department.objects.all()
+    queryset = Department.objects.annotate(employee_count=Count("employees"))
     serializer_class = DepartmentSerializer
     permission_classes = [permissions.IsAuthenticated, IsStaffOrReadOnly]
     filterset_fields = ["is_active"]
+
+    def perform_destroy(self, instance):
+        try:
+            instance.delete()
+        except ProtectedError as exc:
+            raise ValidationError(
+                "Cannot delete a department that still has employees assigned to it."
+            ) from exc
 
 
 class EmployeeViewSet(viewsets.ModelViewSet):

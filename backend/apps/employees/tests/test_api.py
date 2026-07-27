@@ -237,3 +237,49 @@ def test_staff_can_create_department(staff_user):
     response = client.post(reverse("department-list"), {"name": "Sales", "code": "SLS"})
 
     assert response.status_code == 201
+    assert response.json()["employee_count"] == 0
+
+
+def test_department_list_includes_employee_count(staff_user, department, employee, other_employee):
+    client = APIClient()
+    client.force_authenticate(staff_user)
+
+    response = client.get(reverse("department-list"))
+
+    results = {row["code"]: row for row in response.json()["results"]}
+    assert results["ENG"]["employee_count"] == 2
+
+
+def test_staff_can_update_department(staff_user, department):
+    client = APIClient()
+    client.force_authenticate(staff_user)
+
+    response = client.patch(
+        reverse("department-detail", args=[department.id]), {"is_active": False}
+    )
+
+    assert response.status_code == 200
+    department.refresh_from_db()
+    assert department.is_active is False
+
+
+def test_staff_can_delete_empty_department(staff_user):
+    department = Department.objects.create(name="Sales", code="SLS")
+    client = APIClient()
+    client.force_authenticate(staff_user)
+
+    response = client.delete(reverse("department-detail", args=[department.id]))
+
+    assert response.status_code == 204
+    assert not Department.objects.filter(id=department.id).exists()
+
+
+def test_cannot_delete_department_with_employees(staff_user, department, employee):
+    client = APIClient()
+    client.force_authenticate(staff_user)
+
+    response = client.delete(reverse("department-detail", args=[department.id]))
+
+    assert response.status_code == 400
+    assert Department.objects.filter(id=department.id).exists()
+    assert "still has employees" in response.json()[0]
