@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     "apps.users",
     "apps.employees",
     "apps.leave_management",
+    "apps.payroll",
 ]
 
 MIDDLEWARE = [
@@ -147,3 +148,6 @@ CELERY_TASK_SERIALIZER = "json"
 CELERY_RESULT_SERIALIZER = "json"
 CELERY_TIMEZONE = TIME_ZONE
 CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"
+
+# --- Xendit (agent commission disbursements) ---
+XENDIT_SECRET_KEY = env("XENDIT_SECRET_KEY", default="")
