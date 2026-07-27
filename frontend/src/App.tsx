@@ -8,6 +8,7 @@ import Employees from './pages/Employees'
 import Home from './pages/Home'
 import Login from './pages/Login'
 import NotFound from './pages/NotFound'
+import Profile from './pages/Profile'
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
           <Route element={<ProtectedRoute />}>
             <Route element={<Layout />}>
               <Route path="/" element={<Home />} />
+              <Route path="/profile" element={<Profile />} />
               <Route path="/employees" element={<Employees />} />
               <Route path="/departments" element={<Departments />} />
               <Route path="/leave-requests" element={<ComingSoon title="Leave Requests" />} />

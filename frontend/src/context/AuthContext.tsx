@@ -25,6 +25,7 @@ interface AuthContextValue {
   isLoggingOut: boolean
   login: (email: string, password: string) => Promise<void>
   logout: () => Promise<void>
+  refreshUser: () => Promise<void>
 }
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined)
@@ -71,7 +72,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   return (
-    <AuthContext.Provider value={{ user, isLoading, isLoggingOut, login, logout }}>
+    <AuthContext.Provider
+      value={{ user, isLoading, isLoggingOut, login, logout, refreshUser: fetchCurrentUser }}
+    >
       {children}
     </AuthContext.Provider>
   )

@@ -1,4 +1,4 @@
-import { NavLink, Outlet, useNavigate } from 'react-router-dom'
+import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import FullScreenLoader from './FullScreenLoader'
 import {
@@ -80,13 +80,15 @@ function Layout() {
 
         <div className="border-t border-white/10 px-4 py-4">
           <div className="flex items-center gap-3 rounded-2xl bg-white/5 px-3 py-3">
-            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#dbe3ef] text-sm font-bold text-[#1c2f4d]">
-              {user ? initials(user.first_name, user.last_name, user.email) : '?'}
-            </span>
-            <div className="min-w-0 flex-1">
-              <p className="truncate text-sm font-semibold text-white">{displayName}</p>
-              <p className="truncate text-xs text-[#93a2bc]">{user?.email}</p>
-            </div>
+            <Link to="/profile" className="flex min-w-0 flex-1 items-center gap-3">
+              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#dbe3ef] text-sm font-bold text-[#1c2f4d]">
+                {user ? initials(user.first_name, user.last_name, user.email) : '?'}
+              </span>
+              <div className="min-w-0 flex-1">
+                <p className="truncate text-sm font-semibold text-white">{displayName}</p>
+                <p className="truncate text-xs text-[#93a2bc]">{user?.email}</p>
+              </div>
+            </Link>
             <button
               onClick={handleLogout}
               disabled={isLoggingOut}
