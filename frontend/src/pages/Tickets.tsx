@@ -158,7 +158,7 @@ function Tickets() {
             <>
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-sm">
-                  <thead className="bg-[#faf6ec] text-xs font-semibold text-[#5a6a85] uppercase">
+                  <thead className="bg-gradient-to-b from-[#1c2f4d] to-[#0d1b30] text-xs font-semibold text-[#dbe3ef] uppercase">
                     <tr>
                       <th className="px-6 py-3">Ticket</th>
                       <th className="px-6 py-3">Category</th>
