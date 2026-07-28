@@ -39,11 +39,11 @@ function extractErrorMessage(err: unknown): string {
 }
 
 function inputClass() {
-  return 'w-full rounded-xl border border-[#e7ded0] bg-white px-3 py-2 text-sm text-[#1c2f4d] outline-none focus:ring-2 focus:ring-[#1c2f4d]'
+  return 'w-full rounded-xl border border-[#e5e7eb] bg-white px-3 py-2 text-sm text-[#111827] outline-none focus:ring-2 focus:ring-[#4f46e5]'
 }
 
 function labelClass() {
-  return 'mb-1 block text-xs font-semibold text-[#5a6a85] uppercase'
+  return 'mb-1 block text-xs font-semibold text-[#6b7280] uppercase'
 }
 
 interface SaleFormModalProps {
@@ -179,18 +179,18 @@ function SaleFormModal({ isOpen, agents, onClose, onSaved }: SaleFormModalProps)
 
         {error && <p className="text-sm text-red-500">{error}</p>}
 
-        <div className="flex justify-end gap-3 border-t border-[#f0ece0] pt-4">
+        <div className="flex justify-end gap-3 border-t border-[#e5e7eb] pt-4">
           <button
             type="button"
             onClick={onClose}
-            className="rounded-full px-4 py-2 text-sm font-medium text-[#5a6a85] hover:bg-[#f4efe2]"
+            className="rounded-full px-4 py-2 text-sm font-medium text-[#6b7280] hover:bg-[#f8fafc]"
           >
             Cancel
           </button>
           <button
             type="submit"
             disabled={isSubmitting}
-            className="inline-flex items-center gap-2 rounded-full bg-gradient-to-br from-[#1c2f4d] to-[#0d1b30] px-5 py-2 text-sm font-bold text-[#f4efe2] disabled:cursor-not-allowed disabled:opacity-60"
+            className="inline-flex items-center gap-2 rounded-full bg-gradient-to-br from-[#4f46e5] to-[#4338ca] px-5 py-2 text-sm font-bold text-[#f8fafc] disabled:cursor-not-allowed disabled:opacity-60"
           >
             {isSubmitting && <Spinner className="h-4 w-4" />}
             Log Sale

@@ -71,51 +71,51 @@ function DepartmentFormModal({ isOpen, department, onClose, onSaved }: Departmen
     <Modal isOpen={isOpen} onClose={onClose} title={isEdit ? 'Edit Department' : 'Add Department'}>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label className="mb-1 block text-xs font-semibold text-[#5a6a85] uppercase">
+          <label className="mb-1 block text-xs font-semibold text-[#6b7280] uppercase">
             Name
           </label>
           <input
             required
             value={values.name}
             onChange={(e) => setValues((prev) => ({ ...prev, name: e.target.value }))}
-            className="w-full rounded-xl border border-[#e7ded0] bg-white px-3 py-2 text-sm text-[#1c2f4d] outline-none focus:ring-2 focus:ring-[#1c2f4d]"
+            className="w-full rounded-xl border border-[#e5e7eb] bg-white px-3 py-2 text-sm text-[#111827] outline-none focus:ring-2 focus:ring-[#4f46e5]"
           />
         </div>
         <div>
-          <label className="mb-1 block text-xs font-semibold text-[#5a6a85] uppercase">
+          <label className="mb-1 block text-xs font-semibold text-[#6b7280] uppercase">
             Code
           </label>
           <input
             required
             value={values.code}
             onChange={(e) => setValues((prev) => ({ ...prev, code: e.target.value }))}
-            className="w-full rounded-xl border border-[#e7ded0] bg-white px-3 py-2 text-sm text-[#1c2f4d] outline-none focus:ring-2 focus:ring-[#1c2f4d]"
+            className="w-full rounded-xl border border-[#e5e7eb] bg-white px-3 py-2 text-sm text-[#111827] outline-none focus:ring-2 focus:ring-[#4f46e5]"
           />
         </div>
-        <label className="flex items-center gap-2 text-sm text-[#1c2f4d]">
+        <label className="flex items-center gap-2 text-sm text-[#111827]">
           <input
             type="checkbox"
             checked={values.is_active}
             onChange={(e) => setValues((prev) => ({ ...prev, is_active: e.target.checked }))}
-            className="h-4 w-4 rounded border-[#e7ded0] text-[#1c2f4d] focus:ring-[#1c2f4d]"
+            className="h-4 w-4 rounded border-[#e5e7eb] text-[#111827] focus:ring-[#4f46e5]"
           />
           Active
         </label>
 
         {error && <p className="text-sm text-red-500">{error}</p>}
 
-        <div className="flex justify-end gap-3 border-t border-[#f0ece0] pt-4">
+        <div className="flex justify-end gap-3 border-t border-[#e5e7eb] pt-4">
           <button
             type="button"
             onClick={onClose}
-            className="rounded-full px-4 py-2 text-sm font-medium text-[#5a6a85] hover:bg-[#f4efe2]"
+            className="rounded-full px-4 py-2 text-sm font-medium text-[#6b7280] hover:bg-[#f8fafc]"
           >
             Cancel
           </button>
           <button
             type="submit"
             disabled={isSubmitting}
-            className="inline-flex items-center gap-2 rounded-full bg-gradient-to-br from-[#1c2f4d] to-[#0d1b30] px-5 py-2 text-sm font-bold text-[#f4efe2] disabled:cursor-not-allowed disabled:opacity-60"
+            className="inline-flex items-center gap-2 rounded-full bg-gradient-to-br from-[#4f46e5] to-[#4338ca] px-5 py-2 text-sm font-bold text-[#f8fafc] disabled:cursor-not-allowed disabled:opacity-60"
           >
             {isSubmitting && <Spinner className="h-4 w-4" />}
             {isEdit ? 'Save changes' : 'Create department'}

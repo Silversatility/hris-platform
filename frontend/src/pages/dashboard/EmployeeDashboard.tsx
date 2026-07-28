@@ -82,7 +82,7 @@ function EmployeeDashboard() {
 
   return (
     <div className="space-y-8">
-      <p className="text-sm text-[#5a6a85]">Welcome back, {firstName}.</p>
+      <p className="text-sm text-[#6b7280]">Welcome back, {firstName}.</p>
 
       {user?.employee && (
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
@@ -91,37 +91,44 @@ function EmployeeDashboard() {
             value={remainingDays}
             icon={CalendarIcon}
             to="/leave-requests"
-            highlight
+            color="indigo"
           />
           <StatCard
             label="Pending Requests"
             value={pendingRequests.length}
             icon={PeopleIcon}
             to="/leave-requests"
+            color="amber"
           />
-          <StatCard label="Total Payslips" value={totalPayslips} icon={WalletIcon} to="/payroll" />
+          <StatCard
+            label="Total Payslips"
+            value={totalPayslips}
+            icon={WalletIcon}
+            to="/payroll"
+            color="gray"
+          />
         </div>
       )}
 
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
         <section className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-black/5">
-          <h2 className="text-sm font-semibold text-[#5a6a85] uppercase">Profile</h2>
+          <h2 className="text-sm font-semibold text-[#6b7280] uppercase">Profile</h2>
           <dl className="mt-4 space-y-3 text-sm">
             <div className="flex justify-between">
-              <dt className="text-[#5a6a85]">Name</dt>
-              <dd className="font-medium text-[#1c2f4d]">
+              <dt className="text-[#6b7280]">Name</dt>
+              <dd className="font-medium text-[#111827]">
                 {user?.first_name || user?.last_name
                   ? `${user?.first_name} ${user?.last_name}`.trim()
                   : '—'}
               </dd>
             </div>
             <div className="flex justify-between">
-              <dt className="text-[#5a6a85]">Email</dt>
-              <dd className="font-medium text-[#1c2f4d]">{user?.email}</dd>
+              <dt className="text-[#6b7280]">Email</dt>
+              <dd className="font-medium text-[#111827]">{user?.email}</dd>
             </div>
             <div className="flex justify-between">
-              <dt className="text-[#5a6a85]">Role</dt>
-              <dd className="font-medium text-[#1c2f4d]">
+              <dt className="text-[#6b7280]">Role</dt>
+              <dd className="font-medium text-[#111827]">
                 {user?.is_staff ? 'HR Staff' : 'Employee'}
               </dd>
             </div>
@@ -129,23 +136,23 @@ function EmployeeDashboard() {
         </section>
 
         <section className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-black/5">
-          <h2 className="text-sm font-semibold text-[#5a6a85] uppercase">Employment</h2>
+          <h2 className="text-sm font-semibold text-[#6b7280] uppercase">Employment</h2>
           {user?.employee ? (
             <dl className="mt-4 space-y-3 text-sm">
               <div className="flex justify-between">
-                <dt className="text-[#5a6a85]">Employee ID</dt>
-                <dd className="font-medium text-[#1c2f4d]">{user.employee.employee_id}</dd>
+                <dt className="text-[#6b7280]">Employee ID</dt>
+                <dd className="font-medium text-[#111827]">{user.employee.employee_id}</dd>
               </div>
               <div className="flex justify-between">
-                <dt className="text-[#5a6a85]">Job Title</dt>
-                <dd className="font-medium text-[#1c2f4d]">{user.employee.job_title}</dd>
+                <dt className="text-[#6b7280]">Job Title</dt>
+                <dd className="font-medium text-[#111827]">{user.employee.job_title}</dd>
               </div>
               <div className="flex justify-between">
-                <dt className="text-[#5a6a85]">Department</dt>
-                <dd className="font-medium text-[#1c2f4d]">{user.employee.department}</dd>
+                <dt className="text-[#6b7280]">Department</dt>
+                <dd className="font-medium text-[#111827]">{user.employee.department}</dd>
               </div>
               <div className="flex items-center justify-between">
-                <dt className="text-[#5a6a85]">Status</dt>
+                <dt className="text-[#6b7280]">Status</dt>
                 <dd>
                   <span
                     className={`rounded-full px-2.5 py-0.5 text-xs font-semibold capitalize ${
@@ -158,7 +165,7 @@ function EmployeeDashboard() {
               </div>
             </dl>
           ) : (
-            <p className="mt-4 text-sm text-[#5a6a85]">
+            <p className="mt-4 text-sm text-[#6b7280]">
               No employee record linked to this account.
             </p>
           )}
@@ -167,7 +174,7 @@ function EmployeeDashboard() {
 
       {!user?.employee ? null : isLoading ? (
         <div className="flex items-center justify-center p-10">
-          <Spinner className="h-6 w-6 text-[#1c2f4d]" />
+          <Spinner className="h-6 w-6 text-[#111827]" />
         </div>
       ) : (
         <>
@@ -179,8 +186,8 @@ function EmployeeDashboard() {
           <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
             <section className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-black/5">
               <div className="flex items-center justify-between">
-                <h2 className="text-sm font-semibold text-[#5a6a85] uppercase">Recent Payslips</h2>
-                <Link to="/payroll" className="text-xs font-semibold text-[#1c2f4d] hover:underline">
+                <h2 className="text-sm font-semibold text-[#6b7280] uppercase">Recent Payslips</h2>
+                <Link to="/payroll" className="text-xs font-semibold text-[#4f46e5] hover:underline">
                   View all
                 </Link>
               </div>
@@ -188,30 +195,30 @@ function EmployeeDashboard() {
                 {payslips.length > 0 ? (
                   payslips.map((payslip) => (
                     <div key={payslip.id} className="flex justify-between text-sm">
-                      <span className="text-[#5a6a85]">{payslip.generated_at.slice(0, 10)}</span>
-                      <span className="font-medium text-[#1c2f4d]">{payslip.net_pay}</span>
+                      <span className="text-[#6b7280]">{payslip.generated_at.slice(0, 10)}</span>
+                      <span className="font-medium text-[#111827]">{payslip.net_pay}</span>
                     </div>
                   ))
                 ) : (
-                  <p className="text-sm text-[#5a6a85]">No payslips yet.</p>
+                  <p className="text-sm text-[#6b7280]">No payslips yet.</p>
                 )}
               </div>
             </section>
 
             <section className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-black/5">
-              <h2 className="text-sm font-semibold text-[#5a6a85] uppercase">Recent Activity</h2>
+              <h2 className="text-sm font-semibold text-[#6b7280] uppercase">Recent Activity</h2>
               <div className="mt-4 space-y-3">
                 {notifications.length > 0 ? (
                   notifications.map((notification) => (
                     <div key={notification.id} className="text-sm">
-                      <p className="text-[#1c2f4d]">{notification.message}</p>
-                      <p className="text-xs text-[#93a2bc]">
+                      <p className="text-[#111827]">{notification.message}</p>
+                      <p className="text-xs text-[#9ca3af]">
                         {new Date(notification.created_at).toLocaleString()}
                       </p>
                     </div>
                   ))
                 ) : (
-                  <p className="text-sm text-[#5a6a85]">No recent activity.</p>
+                  <p className="text-sm text-[#6b7280]">No recent activity.</p>
                 )}
               </div>
             </section>

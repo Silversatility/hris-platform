@@ -57,14 +57,14 @@ function TicketCard({
       className="cursor-grab space-y-2 rounded-xl bg-white p-3 shadow-sm ring-1 ring-black/5 active:cursor-grabbing"
     >
       <div className="flex items-center justify-between">
-        <span className="text-xs font-semibold text-[#5a6a85]">{ticket.ticket_number}</span>
+        <span className="text-xs font-semibold text-[#6b7280]">{ticket.ticket_number}</span>
         {ticket.is_overdue && (
           <span className="rounded-full bg-rose-600 px-2 py-0.5 text-[10px] font-bold text-white">
             OVERDUE
           </span>
         )}
       </div>
-      <p className="text-sm font-medium text-[#1c2f4d]">{ticket.subject}</p>
+      <p className="text-sm font-medium text-[#111827]">{ticket.subject}</p>
       <div className="flex items-end justify-between">
         <div className="space-y-1.5">
           <span
@@ -74,19 +74,19 @@ function TicketCard({
           >
             {ticket.priority}
           </span>
-          <p className="text-[10px] text-[#93a2bc]">
+          <p className="text-[10px] text-[#9ca3af]">
             {CATEGORY_LABELS[ticket.category] ?? ticket.category}
           </p>
         </div>
         {ticket.assigned_to_name ? (
           <span
             title={ticket.assigned_to_name}
-            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#dbe3ef] text-xs font-bold text-[#1c2f4d]"
+            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#e0e7ff] text-xs font-bold text-[#111827]"
           >
             {initials(ticket.assigned_to_name)}
           </span>
         ) : (
-          <span className="text-[10px] text-[#93a2bc]">Unassigned</span>
+          <span className="text-[10px] text-[#9ca3af]">Unassigned</span>
         )}
       </div>
     </div>
@@ -165,7 +165,7 @@ function TicketBoard({ tickets, isStaff, myEmployeeId, employees, onChanged }: T
                   e.preventDefault()
                   handleDrop(column.status)
                 }}
-                className="flex-1 space-y-2 bg-[#f4efe2] p-3"
+                className="flex-1 space-y-2 bg-[#f8fafc] p-3"
               >
                 {columnTickets.map((ticket) => (
                   <TicketCard

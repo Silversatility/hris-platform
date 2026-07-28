@@ -20,7 +20,7 @@ function Payroll() {
   if (!user?.is_staff) {
     return (
       <div className="p-8">
-        <h1 className="text-2xl font-bold text-[#1c2f4d]">My Payslips</h1>
+        <h1 className="text-2xl font-bold text-[#111827]">My Payslips</h1>
         <div className="mt-8">
           <MyPayslips />
         </div>
@@ -30,7 +30,7 @@ function Payroll() {
 
   return (
     <div className="p-8">
-      <h1 className="text-2xl font-bold text-[#1c2f4d]">Payroll</h1>
+      <h1 className="text-2xl font-bold text-[#111827]">Payroll</h1>
 
       <div className="mt-6 flex gap-2">
         {TABS.map((t) => (
@@ -39,8 +39,8 @@ function Payroll() {
             onClick={() => setTab(t.id)}
             className={`rounded-full px-4 py-2 text-sm font-semibold transition-colors ${
               tab === t.id
-                ? 'bg-[#1c2f4d] text-[#f4efe2]'
-                : 'bg-white text-[#5a6a85] ring-1 ring-[#e7ded0] hover:bg-[#f4efe2]'
+                ? 'bg-[#4f46e5] text-[#f8fafc]'
+                : 'bg-white text-[#6b7280] ring-1 ring-[#e5e7eb] hover:bg-[#f8fafc]'
             }`}
           >
             {t.label}

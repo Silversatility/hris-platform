@@ -83,7 +83,7 @@ function NotificationBell() {
     <div ref={containerRef} className="relative">
       <button
         onClick={openDropdown}
-        className="relative rounded-full p-2 text-[#5a6a85] hover:bg-[#f4efe2]"
+        className="relative rounded-full p-2 text-[#6b7280] hover:bg-[#f8fafc]"
         title="Notifications"
       >
         <BellIcon className="h-5 w-5" />
@@ -96,12 +96,12 @@ function NotificationBell() {
 
       {isOpen && (
         <div className="absolute right-0 z-20 mt-2 w-80 rounded-2xl bg-white shadow-lg ring-1 ring-black/5">
-          <div className="flex items-center justify-between border-b border-[#f0ece0] px-4 py-3">
-            <p className="text-sm font-bold text-[#1c2f4d]">Notifications</p>
+          <div className="flex items-center justify-between border-b border-[#e5e7eb] px-4 py-3">
+            <p className="text-sm font-bold text-[#111827]">Notifications</p>
             {unreadCount > 0 && (
               <button
                 onClick={handleMarkAllRead}
-                className="text-xs font-semibold text-[#1c2f4d] hover:underline"
+                className="text-xs font-semibold text-[#4f46e5] hover:underline"
               >
                 Mark all read
               </button>
@@ -109,22 +109,22 @@ function NotificationBell() {
           </div>
           <div className="max-h-96 overflow-y-auto">
             {isLoading ? (
-              <p className="p-4 text-center text-sm text-[#5a6a85]">Loading…</p>
+              <p className="p-4 text-center text-sm text-[#6b7280]">Loading…</p>
             ) : notifications.length > 0 ? (
               notifications.map((notification) => (
                 <button
                   key={notification.id}
                   onClick={() => handleSelect(notification)}
-                  className={`block w-full border-b border-[#f0ece0] px-4 py-3 text-left text-sm last:border-b-0 hover:bg-[#faf6ec] ${
-                    notification.is_read ? 'text-[#5a6a85]' : 'font-medium text-[#1c2f4d]'
+                  className={`block w-full border-b border-[#e5e7eb] px-4 py-3 text-left text-sm last:border-b-0 hover:bg-[#f9fafb] ${
+                    notification.is_read ? 'text-[#6b7280]' : 'font-medium text-[#111827]'
                   }`}
                 >
                   <p>{notification.message}</p>
-                  <p className="mt-1 text-xs text-[#93a2bc]">{timeAgo(notification.created_at)}</p>
+                  <p className="mt-1 text-xs text-[#9ca3af]">{timeAgo(notification.created_at)}</p>
                 </button>
               ))
             ) : (
-              <p className="p-4 text-center text-sm text-[#5a6a85]">No notifications yet.</p>
+              <p className="p-4 text-center text-sm text-[#6b7280]">No notifications yet.</p>
             )}
           </div>
         </div>

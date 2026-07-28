@@ -19,9 +19,9 @@ function DonutChart({ title, slices, centerLabel }: DonutChartProps) {
 
   return (
     <section className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-black/5">
-      <h2 className="text-sm font-semibold text-[#5a6a85] uppercase">{title}</h2>
+      <h2 className="text-sm font-semibold text-[#6b7280] uppercase">{title}</h2>
       {total === 0 ? (
-        <p className="mt-4 text-sm text-[#5a6a85]">No data yet.</p>
+        <p className="mt-4 text-sm text-[#6b7280]">No data yet.</p>
       ) : (
         <div className="mt-2 flex items-center gap-6">
           <div className="relative h-32 w-32 shrink-0">
@@ -44,7 +44,7 @@ function DonutChart({ title, slices, centerLabel }: DonutChartProps) {
               </PieChart>
             </ResponsiveContainer>
             <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
-              <span className="text-xl font-bold text-[#1c2f4d]">
+              <span className="text-xl font-bold text-[#111827]">
                 {centerLabel ?? `${primaryPercent}%`}
               </span>
             </div>
@@ -52,14 +52,14 @@ function DonutChart({ title, slices, centerLabel }: DonutChartProps) {
           <ul className="flex-1 space-y-2 text-sm">
             {slices.map((slice) => (
               <li key={slice.label} className="flex items-center justify-between gap-3">
-                <span className="flex items-center gap-2 text-[#5a6a85]">
+                <span className="flex items-center gap-2 text-[#6b7280]">
                   <span
                     className="h-2.5 w-2.5 shrink-0 rounded-full"
                     style={{ backgroundColor: slice.color }}
                   />
                   {slice.label}
                 </span>
-                <span className="font-medium text-[#1c2f4d]">{slice.value}</span>
+                <span className="font-medium text-[#111827]">{slice.value}</span>
               </li>
             ))}
           </ul>

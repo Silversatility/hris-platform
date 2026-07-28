@@ -83,7 +83,7 @@ function PayRunDetail({ payRun }: { payRun: PayRunRecord }) {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center p-10">
-        <Spinner className="h-6 w-6 text-[#1c2f4d]" />
+        <Spinner className="h-6 w-6 text-[#111827]" />
       </div>
     )
   }
@@ -91,13 +91,13 @@ function PayRunDetail({ payRun }: { payRun: PayRunRecord }) {
   return (
     <div className="space-y-6 p-6">
       <div>
-        <h3 className="mb-2 text-xs font-bold tracking-wide text-[#1c2f4d] uppercase">
+        <h3 className="mb-2 text-xs font-bold tracking-wide text-[#111827] uppercase">
           Employee Payslips ({payslips.length})
         </h3>
         {payslips.length > 0 ? (
-          <div className="overflow-x-auto rounded-xl ring-1 ring-[#f0ece0]">
+          <div className="overflow-x-auto rounded-xl ring-1 ring-[#e5e7eb]">
             <table className="w-full text-left text-sm">
-              <thead className="bg-[#faf6ec] text-xs font-semibold text-[#5a6a85] uppercase">
+              <thead className="border-b border-[#e5e7eb] text-xs font-semibold text-[#9ca3af] uppercase">
                 <tr>
                   <th className="px-4 py-2">Employee</th>
                   <th className="px-4 py-2">Base Salary</th>
@@ -108,17 +108,17 @@ function PayRunDetail({ payRun }: { payRun: PayRunRecord }) {
                   <th className="px-4 py-2">Payslip</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[#f0ece0]">
+              <tbody className="divide-y divide-[#e5e7eb]">
                 {payslips.map((payslip) => (
                   <tr key={payslip.id}>
                     <td className="px-4 py-2">
-                      <p className="text-[#1c2f4d]">{payslip.employee_display_name}</p>
-                      <p className="text-xs text-[#93a2bc]">{payslip.employee_code}</p>
+                      <p className="text-[#111827]">{payslip.employee_display_name}</p>
+                      <p className="text-xs text-[#9ca3af]">{payslip.employee_code}</p>
                     </td>
-                    <td className="px-4 py-2 text-[#5a6a85]">{payslip.base_salary}</td>
-                    <td className="px-4 py-2 text-[#5a6a85]">{payslip.gross_pay}</td>
-                    <td className="px-4 py-2 text-[#5a6a85]">{payslip.total_deductions}</td>
-                    <td className="px-4 py-2 font-medium text-[#1c2f4d]">{payslip.net_pay}</td>
+                    <td className="px-4 py-2 text-[#6b7280]">{payslip.base_salary}</td>
+                    <td className="px-4 py-2 text-[#6b7280]">{payslip.gross_pay}</td>
+                    <td className="px-4 py-2 text-[#6b7280]">{payslip.total_deductions}</td>
+                    <td className="px-4 py-2 font-medium text-[#111827]">{payslip.net_pay}</td>
                     <td className="px-4 py-2">
                       {payslip.is_paid ? (
                         <PaidBadge record={payslip} />
@@ -131,7 +131,7 @@ function PayRunDetail({ payRun }: { payRun: PayRunRecord }) {
                               label: `${payslip.employee_display_name}'s payslip`,
                             })
                           }
-                          className="rounded-full px-3 py-1 text-xs font-semibold text-[#1c2f4d] ring-1 ring-[#e7ded0] hover:bg-[#f4efe2]"
+                          className="rounded-full px-3 py-1 text-xs font-semibold text-[#111827] ring-1 ring-[#e5e7eb] hover:bg-[#f8fafc]"
                         >
                           Mark Paid
                         </button>
@@ -145,14 +145,14 @@ function PayRunDetail({ payRun }: { payRun: PayRunRecord }) {
                           to={`/payslips/${payslip.id}/print`}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="rounded-full px-3 py-1 text-xs font-semibold text-[#1c2f4d] ring-1 ring-[#e7ded0] hover:bg-[#f4efe2]"
+                          className="rounded-full px-3 py-1 text-xs font-semibold text-[#111827] ring-1 ring-[#e5e7eb] hover:bg-[#f8fafc]"
                         >
                           Print
                         </Link>
                       ) : (
                         <span
                           title="Available once this payslip is paid"
-                          className="rounded-full px-3 py-1 text-xs font-semibold text-[#93a2bc] ring-1 ring-[#f0ece0]"
+                          className="rounded-full px-3 py-1 text-xs font-semibold text-[#9ca3af] ring-1 ring-[#e5e7eb]"
                         >
                           Print
                         </span>
@@ -164,18 +164,18 @@ function PayRunDetail({ payRun }: { payRun: PayRunRecord }) {
             </table>
           </div>
         ) : (
-          <p className="text-sm text-[#5a6a85]">No payslips generated yet.</p>
+          <p className="text-sm text-[#6b7280]">No payslips generated yet.</p>
         )}
       </div>
 
       <div>
-        <h3 className="mb-2 text-xs font-bold tracking-wide text-[#1c2f4d] uppercase">
+        <h3 className="mb-2 text-xs font-bold tracking-wide text-[#111827] uppercase">
           Agent Commission Payouts ({payouts.length})
         </h3>
         {payouts.length > 0 ? (
-          <div className="overflow-x-auto rounded-xl ring-1 ring-[#f0ece0]">
+          <div className="overflow-x-auto rounded-xl ring-1 ring-[#e5e7eb]">
             <table className="w-full text-left text-sm">
-              <thead className="bg-[#faf6ec] text-xs font-semibold text-[#5a6a85] uppercase">
+              <thead className="border-b border-[#e5e7eb] text-xs font-semibold text-[#9ca3af] uppercase">
                 <tr>
                   <th className="px-4 py-2">Agent</th>
                   <th className="px-4 py-2">Sales Counted</th>
@@ -183,12 +183,12 @@ function PayRunDetail({ payRun }: { payRun: PayRunRecord }) {
                   <th className="px-4 py-2">Payment</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[#f0ece0]">
+              <tbody className="divide-y divide-[#e5e7eb]">
                 {payouts.map((payout) => (
                   <tr key={payout.id}>
-                    <td className="px-4 py-2 text-[#1c2f4d]">{payout.agent_display_name}</td>
-                    <td className="px-4 py-2 text-[#5a6a85]">{payout.line_items.length}</td>
-                    <td className="px-4 py-2 font-medium text-[#1c2f4d]">
+                    <td className="px-4 py-2 text-[#111827]">{payout.agent_display_name}</td>
+                    <td className="px-4 py-2 text-[#6b7280]">{payout.line_items.length}</td>
+                    <td className="px-4 py-2 font-medium text-[#111827]">
                       {payout.total_commission}
                     </td>
                     <td className="px-4 py-2">
@@ -203,7 +203,7 @@ function PayRunDetail({ payRun }: { payRun: PayRunRecord }) {
                               label: `${payout.agent_display_name}'s commission payout`,
                             })
                           }
-                          className="rounded-full px-3 py-1 text-xs font-semibold text-[#1c2f4d] ring-1 ring-[#e7ded0] hover:bg-[#f4efe2]"
+                          className="rounded-full px-3 py-1 text-xs font-semibold text-[#111827] ring-1 ring-[#e5e7eb] hover:bg-[#f8fafc]"
                         >
                           Mark Paid
                         </button>
@@ -217,7 +217,7 @@ function PayRunDetail({ payRun }: { payRun: PayRunRecord }) {
             </table>
           </div>
         ) : (
-          <p className="text-sm text-[#5a6a85]">No commission payouts for this period.</p>
+          <p className="text-sm text-[#6b7280]">No commission payouts for this period.</p>
         )}
       </div>
 
@@ -290,7 +290,7 @@ function PayRunsTab() {
       <div className="flex justify-end">
         <button
           onClick={() => setIsModalOpen(true)}
-          className="inline-flex items-center gap-2 rounded-full bg-gradient-to-br from-[#1c2f4d] to-[#0d1b30] px-4 py-2 text-sm font-bold text-[#f4efe2] shadow-sm"
+          className="inline-flex items-center gap-2 rounded-full bg-gradient-to-br from-[#4f46e5] to-[#4338ca] px-4 py-2 text-sm font-bold text-[#f8fafc] shadow-sm"
         >
           <PlusIcon className="h-4 w-4" />
           New Pay Run
@@ -306,13 +306,13 @@ function PayRunsTab() {
       <div className="mt-4 overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-black/5">
         {isLoading ? (
           <div className="flex items-center justify-center p-16">
-            <Spinner className="h-8 w-8 text-[#1c2f4d]" />
+            <Spinner className="h-8 w-8 text-[#111827]" />
           </div>
         ) : error ? (
           <p className="p-8 text-center text-sm text-red-500">{error}</p>
         ) : data && data.results.length > 0 ? (
           <table className="w-full text-left text-sm">
-            <thead className="bg-[#faf6ec] text-xs font-semibold text-[#5a6a85] uppercase">
+            <thead className="border-b border-[#e5e7eb] text-xs font-semibold text-[#9ca3af] uppercase">
               <tr>
                 <th className="px-6 py-3">Period</th>
                 <th className="px-6 py-3">Pay Date</th>
@@ -322,14 +322,14 @@ function PayRunsTab() {
                 <th className="px-6 py-3">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-[#f0ece0]">
+            <tbody className="divide-y divide-[#e5e7eb]">
               {data.results.map((payRun) => (
                 <Fragment key={payRun.id}>
                   <tr>
-                    <td className="px-6 py-4 whitespace-nowrap text-[#1c2f4d]">
+                    <td className="px-6 py-4 whitespace-nowrap text-[#111827]">
                       {payRun.start_date} — {payRun.end_date}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-[#5a6a85]">
+                    <td className="px-6 py-4 whitespace-nowrap text-[#6b7280]">
                       {payRun.pay_date}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
@@ -341,10 +341,10 @@ function PayRunsTab() {
                         {payRun.status}
                       </span>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-[#5a6a85]">
+                    <td className="px-6 py-4 whitespace-nowrap text-[#6b7280]">
                       {payRun.payslip_count}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-[#5a6a85]">
+                    <td className="px-6 py-4 whitespace-nowrap text-[#6b7280]">
                       {payRun.commission_payout_count}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
@@ -353,7 +353,7 @@ function PayRunsTab() {
                           onClick={() =>
                             setExpandedId(expandedId === payRun.id ? null : payRun.id)
                           }
-                          className="rounded-full px-3 py-1 text-xs font-semibold text-[#1c2f4d] ring-1 ring-[#e7ded0] hover:bg-[#f4efe2]"
+                          className="rounded-full px-3 py-1 text-xs font-semibold text-[#111827] ring-1 ring-[#e5e7eb] hover:bg-[#f8fafc]"
                         >
                           {expandedId === payRun.id ? 'Hide' : 'View'}
                         </button>
@@ -362,7 +362,7 @@ function PayRunsTab() {
                             <button
                               onClick={() => handleGenerate(payRun)}
                               disabled={busyId === payRun.id}
-                              className="inline-flex items-center gap-1 rounded-full bg-[#f4efe2] px-3 py-1 text-xs font-semibold text-[#1c2f4d] hover:bg-[#ece4d3] disabled:opacity-50"
+                              className="inline-flex items-center gap-1 rounded-full bg-[#f8fafc] px-3 py-1 text-xs font-semibold text-[#111827] hover:bg-[#ece4d3] disabled:opacity-50"
                             >
                               {busyId === payRun.id && <Spinner className="h-3 w-3" />}
                               Generate
@@ -381,7 +381,7 @@ function PayRunsTab() {
                   </tr>
                   {expandedId === payRun.id && (
                     <tr>
-                      <td colSpan={6} className="bg-[#faf6ec]">
+                      <td colSpan={6} className="bg-[#f9fafb]">
                         <PayRunDetail payRun={payRun} />
                       </td>
                     </tr>
@@ -391,7 +391,7 @@ function PayRunsTab() {
             </tbody>
           </table>
         ) : (
-          <p className="p-8 text-center text-sm text-[#5a6a85]">No pay runs found.</p>
+          <p className="p-8 text-center text-sm text-[#6b7280]">No pay runs found.</p>
         )}
       </div>
 

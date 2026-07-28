@@ -40,12 +40,12 @@ function MiniCalendar({ title, highlights }: MiniCalendarProps) {
   return (
     <section className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-black/5">
       <div className="flex items-center justify-between">
-        <h2 className="text-sm font-semibold text-[#5a6a85] uppercase">{title}</h2>
-        <span className="text-xs font-medium text-[#5a6a85]">{monthLabel}</span>
+        <h2 className="text-sm font-semibold text-[#6b7280] uppercase">{title}</h2>
+        <span className="text-xs font-medium text-[#6b7280]">{monthLabel}</span>
       </div>
       <div className="mt-4 grid grid-cols-7 gap-1 text-center text-xs">
         {WEEKDAY_LABELS.map((label, i) => (
-          <span key={i} className="py-1 font-semibold text-[#93a2bc]">
+          <span key={i} className="py-1 font-semibold text-[#9ca3af]">
             {label}
           </span>
         ))}
@@ -59,7 +59,7 @@ function MiniCalendar({ title, highlights }: MiniCalendarProps) {
               key={dateKey}
               title={dayHighlights?.map((h) => h.label).join(', ')}
               className={`relative flex h-8 w-8 items-center justify-center justify-self-center rounded-full ${
-                isToday ? 'bg-[#1c2f4d] font-bold text-white' : 'text-[#1c2f4d]'
+                isToday ? 'bg-[#4f46e5] font-bold text-white' : 'text-[#111827]'
               }`}
               style={
                 !isToday && dayHighlights?.[0]

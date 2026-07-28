@@ -39,15 +39,15 @@ function extractErrorMessage(err: unknown): string {
 }
 
 function inputClass() {
-  return 'w-full rounded-xl border border-[#e7ded0] bg-white px-3 py-2 text-sm text-[#1c2f4d] outline-none focus:ring-2 focus:ring-[#1c2f4d]'
+  return 'w-full rounded-xl border border-[#e5e7eb] bg-white px-3 py-2 text-sm text-[#111827] outline-none focus:ring-2 focus:ring-[#4f46e5]'
 }
 
 function readOnlyInputClass() {
-  return 'w-full rounded-xl border border-[#e7ded0] bg-[#faf6ec] px-3 py-2 text-sm text-[#5a6a85]'
+  return 'w-full rounded-xl border border-[#e5e7eb] bg-[#f9fafb] px-3 py-2 text-sm text-[#6b7280]'
 }
 
 function labelClass() {
-  return 'mb-1 block text-xs font-semibold text-[#5a6a85] uppercase'
+  return 'mb-1 block text-xs font-semibold text-[#6b7280] uppercase'
 }
 
 interface ProfileFormValues {
@@ -182,27 +182,27 @@ function Profile() {
   if (isLoading) {
     return (
       <div className="flex min-h-[60vh] items-center justify-center">
-        <Spinner className="h-8 w-8 text-[#1c2f4d]" />
+        <Spinner className="h-8 w-8 text-[#111827]" />
       </div>
     )
   }
 
   return (
     <div className="p-8">
-      <h1 className="text-2xl font-bold text-[#1c2f4d]">My Profile</h1>
+      <h1 className="text-2xl font-bold text-[#111827]">My Profile</h1>
 
       <div className="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-3">
         <div className="space-y-6 lg:col-span-1">
           <section className="rounded-2xl bg-white p-6 text-center shadow-sm ring-1 ring-black/5">
-            <span className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-[#1c2f4d] text-2xl font-bold text-[#f4efe2]">
+            <span className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-[#4f46e5] text-2xl font-bold text-[#f8fafc]">
               {user ? initials(user.first_name, user.last_name, user.email) : '?'}
             </span>
-            <p className="mt-4 font-bold text-[#1c2f4d]">{displayName}</p>
-            <p className="text-sm text-[#5a6a85]">{user?.email}</p>
+            <p className="mt-4 font-bold text-[#111827]">{displayName}</p>
+            <p className="text-sm text-[#6b7280]">{user?.email}</p>
           </section>
 
           <section className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-black/5">
-            <h2 className="mb-4 text-sm font-semibold text-[#5a6a85] uppercase">
+            <h2 className="mb-4 text-sm font-semibold text-[#6b7280] uppercase">
               Change Password
             </h2>
             <form onSubmit={handlePasswordSubmit} className="space-y-3">
@@ -247,7 +247,7 @@ function Profile() {
               <button
                 type="submit"
                 disabled={isSavingPassword}
-                className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-gradient-to-br from-[#1c2f4d] to-[#0d1b30] px-5 py-2.5 text-sm font-bold text-[#f4efe2] disabled:cursor-not-allowed disabled:opacity-60"
+                className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-gradient-to-br from-[#4f46e5] to-[#4338ca] px-5 py-2.5 text-sm font-bold text-[#f8fafc] disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {isSavingPassword && <Spinner className="h-4 w-4" />}
                 Change Password
@@ -259,7 +259,7 @@ function Profile() {
         <div className="lg:col-span-2">
           <form onSubmit={handleProfileSubmit} className="space-y-6">
             <section className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-black/5">
-              <h2 className="mb-4 text-sm font-semibold text-[#5a6a85] uppercase">
+              <h2 className="mb-4 text-sm font-semibold text-[#6b7280] uppercase">
                 Profile Information
               </h2>
               <div className="grid grid-cols-2 gap-4">
@@ -284,8 +284,8 @@ function Profile() {
 
             {employee && (
               <section className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-black/5">
-                <h2 className="mb-4 text-sm font-semibold text-[#5a6a85] uppercase">
-                  Employment <span className="text-[#93a2bc] normal-case">(managed by HR)</span>
+                <h2 className="mb-4 text-sm font-semibold text-[#6b7280] uppercase">
+                  Employment <span className="text-[#9ca3af] normal-case">(managed by HR)</span>
                 </h2>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
@@ -332,7 +332,7 @@ function Profile() {
                     <input readOnly value={employee.hire_date} className={readOnlyInputClass()} />
                   </div>
                   <div className="col-span-2 flex items-center gap-2">
-                    <span className="text-xs font-semibold text-[#5a6a85] uppercase">
+                    <span className="text-xs font-semibold text-[#6b7280] uppercase">
                       Status
                     </span>
                     <span
@@ -348,7 +348,7 @@ function Profile() {
             )}
 
             <section className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-black/5">
-              <h2 className="mb-4 text-sm font-semibold text-[#5a6a85] uppercase">
+              <h2 className="mb-4 text-sm font-semibold text-[#6b7280] uppercase">
                 Contact Info
               </h2>
               <div className="grid grid-cols-2 gap-4">
@@ -394,7 +394,7 @@ function Profile() {
 
             {employee && (
               <section className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-black/5">
-                <h2 className="mb-4 text-sm font-semibold text-[#5a6a85] uppercase">
+                <h2 className="mb-4 text-sm font-semibold text-[#6b7280] uppercase">
                   Banking (for payroll deposit)
                 </h2>
                 <div className="grid grid-cols-2 gap-4">
@@ -436,7 +436,7 @@ function Profile() {
               <button
                 type="submit"
                 disabled={isSavingProfile}
-                className="inline-flex items-center gap-2 rounded-full bg-gradient-to-br from-[#1c2f4d] to-[#0d1b30] px-6 py-2.5 text-sm font-bold text-[#f4efe2] disabled:cursor-not-allowed disabled:opacity-60"
+                className="inline-flex items-center gap-2 rounded-full bg-gradient-to-br from-[#4f46e5] to-[#4338ca] px-6 py-2.5 text-sm font-bold text-[#f8fafc] disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {isSavingProfile && <Spinner className="h-4 w-4" />}
                 Save Changes

@@ -85,14 +85,14 @@ function Tickets() {
   return (
     <div className="p-8">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-[#1c2f4d]">Tickets</h1>
+        <h1 className="text-2xl font-bold text-[#111827]">Tickets</h1>
 
         <div className="flex items-center gap-3">
-          <div className="flex rounded-full bg-white p-1 shadow-sm ring-1 ring-[#e7ded0]">
+          <div className="flex rounded-full bg-white p-1 shadow-sm ring-1 ring-[#e5e7eb]">
             <button
               onClick={() => setView('list')}
               className={`rounded-full px-3 py-1.5 text-xs font-semibold transition-colors ${
-                view === 'list' ? 'bg-[#1c2f4d] text-white' : 'text-[#5a6a85] hover:bg-[#f4efe2]'
+                view === 'list' ? 'bg-[#4f46e5] text-white' : 'text-[#6b7280] hover:bg-[#f8fafc]'
               }`}
             >
               List
@@ -100,7 +100,7 @@ function Tickets() {
             <button
               onClick={() => setView('board')}
               className={`rounded-full px-3 py-1.5 text-xs font-semibold transition-colors ${
-                view === 'board' ? 'bg-[#1c2f4d] text-white' : 'text-[#5a6a85] hover:bg-[#f4efe2]'
+                view === 'board' ? 'bg-[#4f46e5] text-white' : 'text-[#6b7280] hover:bg-[#f8fafc]'
               }`}
             >
               Board
@@ -112,7 +112,7 @@ function Tickets() {
               <select
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
-                className="appearance-none rounded-full bg-white py-2 pr-11 pl-4 text-sm text-[#1c2f4d] shadow-sm ring-1 ring-[#e7ded0] outline-none focus:ring-2 focus:ring-[#1c2f4d]"
+                className="appearance-none rounded-full bg-white py-2 pr-11 pl-4 text-sm text-[#111827] shadow-sm ring-1 ring-[#e5e7eb] outline-none focus:ring-2 focus:ring-[#4f46e5]"
               >
                 {STATUS_OPTIONS.map((option) => (
                   <option key={option.value} value={option.value}>
@@ -120,13 +120,13 @@ function Tickets() {
                   </option>
                 ))}
               </select>
-              <ChevronDownIcon className="pointer-events-none absolute top-1/2 right-4 h-4 w-4 -translate-y-1/2 text-[#5a6a85]" />
+              <ChevronDownIcon className="pointer-events-none absolute top-1/2 right-4 h-4 w-4 -translate-y-1/2 text-[#6b7280]" />
             </div>
           )}
 
           <button
             onClick={() => setIsModalOpen(true)}
-            className="inline-flex items-center gap-2 rounded-full bg-gradient-to-br from-[#1c2f4d] to-[#0d1b30] px-4 py-2 text-sm font-bold text-[#f4efe2] shadow-sm"
+            className="inline-flex items-center gap-2 rounded-full bg-gradient-to-br from-[#4f46e5] to-[#4338ca] px-4 py-2 text-sm font-bold text-[#f8fafc] shadow-sm"
           >
             <PlusIcon className="h-4 w-4" />
             New Ticket
@@ -136,7 +136,7 @@ function Tickets() {
 
       {isLoading ? (
         <div className="mt-6 flex items-center justify-center rounded-2xl bg-white p-16 shadow-sm ring-1 ring-black/5">
-          <Spinner className="h-8 w-8 text-[#1c2f4d]" />
+          <Spinner className="h-8 w-8 text-[#111827]" />
         </div>
       ) : error ? (
         <p className="mt-6 rounded-2xl bg-white p-8 text-center text-sm text-red-500 shadow-sm ring-1 ring-black/5">
@@ -158,7 +158,7 @@ function Tickets() {
             <>
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-sm">
-                  <thead className="bg-[#faf6ec] text-xs font-semibold text-[#5a6a85] uppercase">
+                  <thead className="border-b border-[#e5e7eb] text-xs font-semibold text-[#9ca3af] uppercase">
                     <tr>
                       <th className="px-6 py-3">Ticket</th>
                       <th className="px-6 py-3">Category</th>
@@ -169,20 +169,20 @@ function Tickets() {
                       <th className="px-6 py-3">Actions</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-[#f0ece0]">
+                  <tbody className="divide-y divide-[#e5e7eb]">
                     {data.results.map((ticket) => (
                       <Fragment key={ticket.id}>
                         <tr
                           onClick={() =>
                             setExpandedId(expandedId === ticket.id ? null : ticket.id)
                           }
-                          className="cursor-pointer transition-colors hover:bg-[#faf6ec]"
+                          className="cursor-pointer transition-colors hover:bg-[#f9fafb]"
                         >
-                          <td className="px-6 py-4 whitespace-nowrap text-[#1c2f4d]">
+                          <td className="px-6 py-4 whitespace-nowrap text-[#111827]">
                             <p className="font-medium">{ticket.ticket_number}</p>
-                            <p className="text-xs text-[#5a6a85]">{ticket.subject}</p>
+                            <p className="text-xs text-[#6b7280]">{ticket.subject}</p>
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-[#5a6a85]">
+                          <td className="px-6 py-4 whitespace-nowrap text-[#6b7280]">
                             {CATEGORY_LABELS[ticket.category] ?? ticket.category}
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
@@ -194,10 +194,10 @@ function Tickets() {
                               {ticket.priority}
                             </span>
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-[#5a6a85]">
+                          <td className="px-6 py-4 whitespace-nowrap text-[#6b7280]">
                             {ticket.requester_name}
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-[#5a6a85]">
+                          <td className="px-6 py-4 whitespace-nowrap text-[#6b7280]">
                             {ticket.assigned_to_name ?? '—'}
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
@@ -209,7 +209,7 @@ function Tickets() {
                                 e.stopPropagation()
                                 setExpandedId(expandedId === ticket.id ? null : ticket.id)
                               }}
-                              className="flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold text-[#1c2f4d] ring-1 ring-[#e7ded0] hover:bg-white"
+                              className="flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold text-[#111827] ring-1 ring-[#e5e7eb] hover:bg-white"
                             >
                               {expandedId === ticket.id ? 'Hide' : 'View'}
                               <ChevronDownIcon
@@ -222,7 +222,7 @@ function Tickets() {
                         </tr>
                         {expandedId === ticket.id && (
                           <tr>
-                            <td colSpan={7} className="bg-[#faf6ec] p-6">
+                            <td colSpan={7} className="bg-[#f9fafb] p-6">
                               <TicketDetail
                                 ticket={ticket}
                                 isStaff={isStaff}
@@ -238,7 +238,7 @@ function Tickets() {
                   </tbody>
                 </table>
               </div>
-              <div className="flex items-center justify-between border-t border-[#f0ece0] px-6 py-4 text-sm text-[#5a6a85]">
+              <div className="flex items-center justify-between border-t border-[#e5e7eb] px-6 py-4 text-sm text-[#6b7280]">
                 <span>
                   {data.count} ticket{data.count === 1 ? '' : 's'}
                 </span>
@@ -246,14 +246,14 @@ function Tickets() {
                   <button
                     onClick={() => data.previous && setUrl(data.previous)}
                     disabled={!data.previous}
-                    className="rounded-full px-3 py-1.5 font-medium text-[#1c2f4d] ring-1 ring-[#e7ded0] disabled:cursor-not-allowed disabled:opacity-40"
+                    className="rounded-full px-3 py-1.5 font-medium text-[#111827] ring-1 ring-[#e5e7eb] disabled:cursor-not-allowed disabled:opacity-40"
                   >
                     Previous
                   </button>
                   <button
                     onClick={() => data.next && setUrl(data.next)}
                     disabled={!data.next}
-                    className="rounded-full px-3 py-1.5 font-medium text-[#1c2f4d] ring-1 ring-[#e7ded0] disabled:cursor-not-allowed disabled:opacity-40"
+                    className="rounded-full px-3 py-1.5 font-medium text-[#111827] ring-1 ring-[#e5e7eb] disabled:cursor-not-allowed disabled:opacity-40"
                   >
                     Next
                   </button>
@@ -261,7 +261,7 @@ function Tickets() {
               </div>
             </>
           ) : (
-            <p className="p-8 text-center text-sm text-[#5a6a85]">No tickets found.</p>
+            <p className="p-8 text-center text-sm text-[#6b7280]">No tickets found.</p>
           )}
         </div>
       )}

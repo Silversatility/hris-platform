@@ -59,7 +59,7 @@ function TicketDetail({ ticket, isStaff, myEmployeeId, employees, onChanged }: T
 
   return (
     <div className="space-y-4">
-      {ticket.description && <p className="text-sm text-[#5a6a85]">{ticket.description}</p>}
+      {ticket.description && <p className="text-sm text-[#6b7280]">{ticket.description}</p>}
 
       <div className="flex flex-wrap gap-2">
         {canAssign && (
@@ -67,7 +67,7 @@ function TicketDetail({ ticket, isStaff, myEmployeeId, employees, onChanged }: T
             <select
               value={assigneeId}
               onChange={(e) => setAssigneeId(e.target.value)}
-              className="rounded-full border border-[#e7ded0] bg-white px-3 py-1.5 text-xs text-[#1c2f4d] outline-none focus:ring-2 focus:ring-[#1c2f4d]"
+              className="rounded-full border border-[#e5e7eb] bg-white px-3 py-1.5 text-xs text-[#111827] outline-none focus:ring-2 focus:ring-[#4f46e5]"
             >
               <option value="">Assign to...</option>
               {employees.map((employee) => (
@@ -85,7 +85,7 @@ function TicketDetail({ ticket, isStaff, myEmployeeId, employees, onChanged }: T
                   })
                 })
               }
-              className="rounded-full bg-[#1c2f4d] px-3 py-1.5 text-xs font-semibold text-white disabled:opacity-50"
+              className="rounded-full bg-[#4f46e5] px-3 py-1.5 text-xs font-semibold text-white disabled:opacity-50"
             >
               Assign
             </button>
@@ -104,7 +104,7 @@ function TicketDetail({ ticket, isStaff, myEmployeeId, employees, onChanged }: T
           <button
             disabled={isBusy}
             onClick={() => runAction(() => apiClient.post(`/api/tickets/${ticket.id}/close/`))}
-            className="rounded-full px-3 py-1.5 text-xs font-semibold text-[#5a6a85] ring-1 ring-[#e7ded0] hover:bg-[#f4efe2] disabled:opacity-50"
+            className="rounded-full px-3 py-1.5 text-xs font-semibold text-[#6b7280] ring-1 ring-[#e5e7eb] hover:bg-[#f8fafc] disabled:opacity-50"
           >
             Close Ticket
           </button>
@@ -123,24 +123,24 @@ function TicketDetail({ ticket, isStaff, myEmployeeId, employees, onChanged }: T
       {error && <p className="text-sm text-rose-600">{error}</p>}
 
       <div>
-        <h3 className="mb-2 text-xs font-bold tracking-wide text-[#1c2f4d] uppercase">
+        <h3 className="mb-2 text-xs font-bold tracking-wide text-[#111827] uppercase">
           Comments ({ticket.comments.length})
         </h3>
         <div className="max-h-64 space-y-3 overflow-y-auto">
           {ticket.comments.length > 0 ? (
             ticket.comments.map((c) => (
-              <div key={c.id} className="rounded-xl bg-[#faf6ec] px-4 py-2.5 text-sm">
+              <div key={c.id} className="rounded-xl bg-[#f9fafb] px-4 py-2.5 text-sm">
                 <div className="flex items-center justify-between">
-                  <span className="font-medium text-[#1c2f4d]">{c.author_name}</span>
-                  <span className="text-xs text-[#93a2bc]">
+                  <span className="font-medium text-[#111827]">{c.author_name}</span>
+                  <span className="text-xs text-[#9ca3af]">
                     {new Date(c.created_at).toLocaleString()}
                   </span>
                 </div>
-                <p className="mt-1 text-[#5a6a85]">{c.body}</p>
+                <p className="mt-1 text-[#6b7280]">{c.body}</p>
               </div>
             ))
           ) : (
-            <p className="text-sm text-[#5a6a85]">No comments yet.</p>
+            <p className="text-sm text-[#6b7280]">No comments yet.</p>
           )}
         </div>
         <div className="mt-3 flex gap-2">
@@ -148,12 +148,12 @@ function TicketDetail({ ticket, isStaff, myEmployeeId, employees, onChanged }: T
             value={comment}
             onChange={(e) => setComment(e.target.value)}
             placeholder="Add a comment..."
-            className="flex-1 rounded-xl border border-[#e7ded0] bg-white px-3 py-2 text-sm text-[#1c2f4d] outline-none focus:ring-2 focus:ring-[#1c2f4d]"
+            className="flex-1 rounded-xl border border-[#e5e7eb] bg-white px-3 py-2 text-sm text-[#111827] outline-none focus:ring-2 focus:ring-[#4f46e5]"
           />
           <button
             disabled={isBusy || !comment.trim()}
             onClick={handleComment}
-            className="rounded-xl bg-[#1c2f4d] px-4 py-2 text-sm font-semibold text-white disabled:opacity-50"
+            className="rounded-xl bg-[#4f46e5] px-4 py-2 text-sm font-semibold text-white disabled:opacity-50"
           >
             Send
           </button>

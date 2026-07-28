@@ -70,18 +70,18 @@ function MarkPaidModal({ isOpen, title, endpoint, onClose, onSaved }: MarkPaidMo
   return (
     <Modal isOpen={isOpen} onClose={onClose} title={title}>
       <form onSubmit={handleSubmit} className="space-y-4">
-        <p className="text-sm text-[#5a6a85]">
+        <p className="text-sm text-[#6b7280]">
           This only records that payment was made outside the system (bank transfer, GCash,
           etc.) — it does not send any money.
         </p>
         <div>
-          <label className="mb-1 block text-xs font-semibold text-[#5a6a85] uppercase">
+          <label className="mb-1 block text-xs font-semibold text-[#6b7280] uppercase">
             Payment Method
           </label>
           <select
             value={paymentMethod}
             onChange={(e) => setPaymentMethod(e.target.value)}
-            className="w-full rounded-xl border border-[#e7ded0] bg-white px-3 py-2 text-sm text-[#1c2f4d] outline-none focus:ring-2 focus:ring-[#1c2f4d]"
+            className="w-full rounded-xl border border-[#e5e7eb] bg-white px-3 py-2 text-sm text-[#111827] outline-none focus:ring-2 focus:ring-[#4f46e5]"
           >
             {PAYMENT_METHODS.map((method) => (
               <option key={method.value} value={method.value}>
@@ -91,31 +91,31 @@ function MarkPaidModal({ isOpen, title, endpoint, onClose, onSaved }: MarkPaidMo
           </select>
         </div>
         <div>
-          <label className="mb-1 block text-xs font-semibold text-[#5a6a85] uppercase">
+          <label className="mb-1 block text-xs font-semibold text-[#6b7280] uppercase">
             Reference (optional)
           </label>
           <input
             placeholder="e.g. transaction ID, receipt number"
             value={paymentReference}
             onChange={(e) => setPaymentReference(e.target.value)}
-            className="w-full rounded-xl border border-[#e7ded0] bg-white px-3 py-2 text-sm text-[#1c2f4d] outline-none focus:ring-2 focus:ring-[#1c2f4d]"
+            className="w-full rounded-xl border border-[#e5e7eb] bg-white px-3 py-2 text-sm text-[#111827] outline-none focus:ring-2 focus:ring-[#4f46e5]"
           />
         </div>
 
         {error && <p className="text-sm text-red-500">{error}</p>}
 
-        <div className="flex justify-end gap-3 border-t border-[#f0ece0] pt-4">
+        <div className="flex justify-end gap-3 border-t border-[#e5e7eb] pt-4">
           <button
             type="button"
             onClick={onClose}
-            className="rounded-full px-4 py-2 text-sm font-medium text-[#5a6a85] hover:bg-[#f4efe2]"
+            className="rounded-full px-4 py-2 text-sm font-medium text-[#6b7280] hover:bg-[#f8fafc]"
           >
             Cancel
           </button>
           <button
             type="submit"
             disabled={isSubmitting}
-            className="inline-flex items-center gap-2 rounded-full bg-gradient-to-br from-[#1c2f4d] to-[#0d1b30] px-5 py-2 text-sm font-bold text-[#f4efe2] disabled:cursor-not-allowed disabled:opacity-60"
+            className="inline-flex items-center gap-2 rounded-full bg-gradient-to-br from-[#4f46e5] to-[#4338ca] px-5 py-2 text-sm font-bold text-[#f8fafc] disabled:cursor-not-allowed disabled:opacity-60"
           >
             {isSubmitting && <Spinner className="h-4 w-4" />}
             Mark as Paid

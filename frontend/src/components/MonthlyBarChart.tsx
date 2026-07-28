@@ -17,14 +17,14 @@ function MonthlyBarChart({ title, data, previousYearLabel, currentYearLabel }: M
   return (
     <section className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-black/5">
       <div className="flex items-center justify-between">
-        <h2 className="text-sm font-semibold text-[#5a6a85] uppercase">{title}</h2>
-        <div className="flex items-center gap-4 text-xs text-[#5a6a85]">
+        <h2 className="text-sm font-semibold text-[#6b7280] uppercase">{title}</h2>
+        <div className="flex items-center gap-4 text-xs text-[#6b7280]">
           <span className="flex items-center gap-1.5">
             <span className="h-2.5 w-2.5 rounded-full bg-[#f5a95e]" />
             {previousYearLabel}
           </span>
           <span className="flex items-center gap-1.5">
-            <span className="h-2.5 w-2.5 rounded-full bg-[#1c2f4d]" />
+            <span className="h-2.5 w-2.5 rounded-full bg-[#4f46e5]" />
             {currentYearLabel}
           </span>
         </div>
@@ -36,15 +36,15 @@ function MonthlyBarChart({ title, data, previousYearLabel, currentYearLabel }: M
               dataKey="month"
               axisLine={false}
               tickLine={false}
-              tick={{ fill: '#5a6a85', fontSize: 12 }}
+              tick={{ fill: '#6b7280', fontSize: 12 }}
             />
-            <YAxis axisLine={false} tickLine={false} tick={{ fill: '#5a6a85', fontSize: 12 }} />
+            <YAxis axisLine={false} tickLine={false} tick={{ fill: '#6b7280', fontSize: 12 }} />
             <Tooltip
-              cursor={{ fill: '#faf6ec' }}
-              contentStyle={{ borderRadius: 12, border: '1px solid #f0ece0', fontSize: 12 }}
+              cursor={{ fill: '#f9fafb' }}
+              contentStyle={{ borderRadius: 12, border: '1px solid #e5e7eb', fontSize: 12 }}
             />
             <Bar dataKey="previousYear" fill="#f5a95e" radius={[4, 4, 0, 0]} />
-            <Bar dataKey="currentYear" fill="#1c2f4d" radius={[4, 4, 0, 0]} />
+            <Bar dataKey="currentYear" fill="#4f46e5" radius={[4, 4, 0, 0]} />
           </BarChart>
         </ResponsiveContainer>
       </div>

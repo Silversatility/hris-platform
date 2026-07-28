@@ -143,7 +143,7 @@ function StaffDashboard() {
           Object.entries(statusCounts).map(([status, count]) => ({
             label: STATUS_LABELS[status] ?? status,
             value: count,
-            color: STATUS_COLORS[status] ?? '#93a2bc',
+            color: STATUS_COLORS[status] ?? '#9ca3af',
           }))
         )
 
@@ -179,7 +179,7 @@ function StaffDashboard() {
           if (date.getFullYear() === currentYear && date.getMonth() === nowMonth) {
             highlights.push({
               date: payRun.pay_date,
-              color: '#1c2f4d',
+              color: '#4f46e5',
               label: `Pay date (${payRun.status})`,
             })
           }
@@ -230,7 +230,7 @@ function StaffDashboard() {
   if (isLoading || !stats) {
     return (
       <div className="flex items-center justify-center p-16">
-        <Spinner className="h-8 w-8 text-[#1c2f4d]" />
+        <Spinner className="h-8 w-8 text-[#111827]" />
       </div>
     )
   }
@@ -243,40 +243,51 @@ function StaffDashboard() {
           value={stats.activeEmployees}
           icon={PeopleIcon}
           to="/employees"
-          highlight
+          color="indigo"
         />
         <StatCard
           label="Departments"
           value={stats.departments}
           icon={BuildingIcon}
           to="/departments"
+          color="gray"
         />
         <StatCard
           label="Pending Leave Requests"
           value={stats.pendingLeaveRequests}
           icon={CalendarIcon}
           to="/leave-requests"
+          color="amber"
         />
         <StatCard
           label="Draft Pay Runs"
           value={stats.draftPayRuns}
           icon={WalletIcon}
           to="/payroll"
+          color="rose"
         />
       </div>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-        <StatCard label="Cars Sold This Month" value={carsSoldThisMonth} icon={CarIcon} to="/payroll" />
+        <StatCard
+          label="Cars Sold This Month"
+          value={carsSoldThisMonth}
+          icon={CarIcon}
+          to="/payroll"
+          color="indigo"
+        />
         <StatCard
           label="Profit This Month"
           value={formatPeso(profitThisMonth)}
           icon={WalletIcon}
           to="/payroll"
+          color="amber"
         />
         <StatCard
           label="Perfect Attendance"
           value={`${attendance.perfectCount} / ${attendance.totalActive}`}
           icon={CheckBadgeIcon}
+          color="gray"
         />
       </div>
 
@@ -295,11 +306,11 @@ function StaffDashboard() {
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         <section className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-black/5">
           <div className="flex items-center justify-between">
-            <h2 className="flex items-center gap-2 text-sm font-semibold text-[#5a6a85] uppercase">
+            <h2 className="flex items-center gap-2 text-sm font-semibold text-[#6b7280] uppercase">
               <TrophyIcon className="h-4 w-4" />
               Top Agents This Month
             </h2>
-            <Link to="/payroll" className="text-xs font-semibold text-[#1c2f4d] hover:underline">
+            <Link to="/payroll" className="text-xs font-semibold text-[#4f46e5] hover:underline">
               View all
             </Link>
           </div>
@@ -308,34 +319,34 @@ function StaffDashboard() {
               topAgents.map((agent, index) => (
                 <div
                   key={agent.name}
-                  className="flex items-center justify-between rounded-xl bg-[#faf6ec] px-4 py-3 text-sm"
+                  className="flex items-center justify-between rounded-xl bg-[#f9fafb] px-4 py-3 text-sm"
                 >
                   <div className="flex items-center gap-3">
-                    <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[#1c2f4d] text-xs font-bold text-white">
+                    <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[#4f46e5] text-xs font-bold text-white">
                       {index + 1}
                     </span>
                     <div>
-                      <p className="font-medium text-[#1c2f4d]">{agent.name}</p>
-                      <p className="text-xs text-[#5a6a85]">
+                      <p className="font-medium text-[#111827]">{agent.name}</p>
+                      <p className="text-xs text-[#6b7280]">
                         {agent.cars} car{agent.cars > 1 ? 's' : ''} sold
                       </p>
                     </div>
                   </div>
-                  <span className="font-medium text-[#1c2f4d]">{formatPeso(agent.revenue)}</span>
+                  <span className="font-medium text-[#111827]">{formatPeso(agent.revenue)}</span>
                 </div>
               ))
             ) : (
-              <p className="text-sm text-[#5a6a85]">No sales recorded this month.</p>
+              <p className="text-sm text-[#6b7280]">No sales recorded this month.</p>
             )}
           </div>
         </section>
 
         <section className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-black/5">
-          <h2 className="flex items-center gap-2 text-sm font-semibold text-[#5a6a85] uppercase">
+          <h2 className="flex items-center gap-2 text-sm font-semibold text-[#6b7280] uppercase">
             <CheckBadgeIcon className="h-4 w-4" />
             Perfect Attendance
           </h2>
-          <p className="mt-1 text-xs text-[#5a6a85]">
+          <p className="mt-1 text-xs text-[#6b7280]">
             Active employees with no approved leave this month.
           </p>
           <div className="mt-4 flex flex-wrap gap-2">
@@ -350,13 +361,13 @@ function StaffDashboard() {
                   </span>
                 ))}
                 {attendance.names.length > 10 && (
-                  <span className="rounded-full bg-[#f4efe2] px-3 py-1 text-xs font-medium text-[#5a6a85]">
+                  <span className="rounded-full bg-[#f8fafc] px-3 py-1 text-xs font-medium text-[#6b7280]">
                     +{attendance.names.length - 10} more
                   </span>
                 )}
               </>
             ) : (
-              <p className="text-sm text-[#5a6a85]">No active employees on record.</p>
+              <p className="text-sm text-[#6b7280]">No active employees on record.</p>
             )}
           </div>
         </section>
@@ -365,10 +376,10 @@ function StaffDashboard() {
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         <section className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-black/5 lg:col-span-2">
           <div className="flex items-center justify-between">
-            <h2 className="text-sm font-semibold text-[#5a6a85] uppercase">
+            <h2 className="text-sm font-semibold text-[#6b7280] uppercase">
               Pending Leave Requests
             </h2>
-            <Link to="/leave-requests" className="text-xs font-semibold text-[#1c2f4d] hover:underline">
+            <Link to="/leave-requests" className="text-xs font-semibold text-[#4f46e5] hover:underline">
               View all
             </Link>
           </div>
@@ -377,11 +388,11 @@ function StaffDashboard() {
               pendingRequests.map((request) => (
                 <div
                   key={request.id}
-                  className="flex items-center justify-between rounded-xl bg-[#faf6ec] px-4 py-3 text-sm"
+                  className="flex items-center justify-between rounded-xl bg-[#f9fafb] px-4 py-3 text-sm"
                 >
                   <div>
-                    <p className="font-medium text-[#1c2f4d]">{request.employee_display_name}</p>
-                    <p className="text-xs text-[#5a6a85]">
+                    <p className="font-medium text-[#111827]">{request.employee_display_name}</p>
+                    <p className="text-xs text-[#6b7280]">
                       {request.leave_type_name} — {request.start_date} to {request.end_date}
                     </p>
                   </div>
@@ -391,7 +402,7 @@ function StaffDashboard() {
                 </div>
               ))
             ) : (
-              <p className="text-sm text-[#5a6a85]">No pending leave requests.</p>
+              <p className="text-sm text-[#6b7280]">No pending leave requests.</p>
             )}
           </div>
         </section>
@@ -400,19 +411,19 @@ function StaffDashboard() {
       </div>
 
       <section className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-black/5">
-        <h2 className="text-sm font-semibold text-[#5a6a85] uppercase">Recent Activity</h2>
+        <h2 className="text-sm font-semibold text-[#6b7280] uppercase">Recent Activity</h2>
         <div className="mt-4 space-y-3">
           {notifications.length > 0 ? (
             notifications.map((notification) => (
               <div key={notification.id} className="text-sm">
-                <p className="text-[#1c2f4d]">{notification.message}</p>
-                <p className="text-xs text-[#93a2bc]">
+                <p className="text-[#111827]">{notification.message}</p>
+                <p className="text-xs text-[#9ca3af]">
                   {new Date(notification.created_at).toLocaleString()}
                 </p>
               </div>
             ))
           ) : (
-            <p className="text-sm text-[#5a6a85]">No recent activity.</p>
+            <p className="text-sm text-[#6b7280]">No recent activity.</p>
           )}
         </div>
       </section>

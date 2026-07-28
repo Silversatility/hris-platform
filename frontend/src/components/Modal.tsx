@@ -26,11 +26,11 @@ function Modal({ isOpen, onClose, title, children }: ModalProps) {
     <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/40 p-4">
       <div className="max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-2xl bg-white p-6 shadow-2xl">
         <div className="mb-5 flex items-center justify-between">
-          <h2 className="text-lg font-bold text-[#1c2f4d]">{title}</h2>
+          <h2 className="text-lg font-bold text-[#111827]">{title}</h2>
           <button
             onClick={onClose}
             aria-label="Close"
-            className="rounded-full p-1 text-[#5a6a85] hover:bg-[#f4efe2] hover:text-[#1c2f4d]"
+            className="rounded-full p-1 text-[#6b7280] hover:bg-[#f8fafc] hover:text-[#111827]"
           >
             <CloseIcon className="h-5 w-5" />
           </button>

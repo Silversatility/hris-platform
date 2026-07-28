@@ -106,18 +106,18 @@ function Layout() {
       : user?.email
 
   return (
-    <div className="flex min-h-screen bg-[#f4efe2]">
+    <div className="flex min-h-screen bg-[#f8fafc]">
       {isLoggingOut && <FullScreenLoader />}
-      <aside className="flex w-64 flex-col bg-gradient-to-b from-[#1c2f4d] to-[#0d1b30] text-[#dbe3ef]">
+      <aside className="flex w-64 flex-col border-r border-[#e5e7eb] bg-white">
         <div className="flex items-center gap-2 px-6 py-6">
-          <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#dbe3ef] text-sm font-bold text-[#1c2f4d]">
+          <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#4f46e5] text-sm font-bold text-white">
             H
           </span>
-          <span className="text-lg font-bold text-white">HRIS Platform</span>
+          <span className="text-lg font-bold text-[#111827]">HRIS Platform</span>
         </div>
 
         <div className="px-4">
-          <div className="flex items-center gap-2 rounded-full bg-white/10 px-4 py-2.5 text-sm text-[#b7c2d6]">
+          <div className="flex items-center gap-2 rounded-full bg-[#f3f4f6] px-4 py-2.5 text-sm text-[#6b7280]">
             <SearchIcon className="h-4 w-4" />
             <span>Search</span>
           </div>
@@ -135,8 +135,8 @@ function Layout() {
                   className={({ isActive }) =>
                     `flex items-center gap-3 rounded-full px-4 py-2.5 text-sm font-medium transition-colors ${
                       isActive
-                        ? 'bg-white/15 text-white'
-                        : 'text-[#b7c2d6] hover:bg-white/5 hover:text-white'
+                        ? 'bg-[#eef2ff] text-[#4f46e5]'
+                        : 'text-[#4b5563] hover:bg-[#f3f4f6] hover:text-[#111827]'
                     }`
                   }
                 >
@@ -156,8 +156,8 @@ function Layout() {
                   onClick={() => setOpenGroup(isOpen ? null : label)}
                   className={`flex w-full items-center gap-3 rounded-full px-4 py-2.5 text-sm font-medium transition-colors ${
                     isGroupActive
-                      ? 'bg-white/15 text-white'
-                      : 'text-[#b7c2d6] hover:bg-white/5 hover:text-white'
+                      ? 'bg-[#eef2ff] text-[#4f46e5]'
+                      : 'text-[#4b5563] hover:bg-[#f3f4f6] hover:text-[#111827]'
                   }`}
                 >
                   <Icon className="h-4.5 w-4.5" />
@@ -179,8 +179,8 @@ function Layout() {
                         className={({ isActive }) =>
                           `block rounded-full px-4 py-2 text-sm font-medium transition-colors ${
                             isActive
-                              ? 'bg-white/15 text-white'
-                              : 'text-[#b7c2d6] hover:bg-white/5 hover:text-white'
+                              ? 'bg-[#eef2ff] text-[#4f46e5]'
+                              : 'text-[#4b5563] hover:bg-[#f3f4f6] hover:text-[#111827]'
                           }`
                         }
                       >
@@ -194,22 +194,22 @@ function Layout() {
           })}
         </nav>
 
-        <div className="border-t border-white/10 px-4 py-4">
-          <div className="flex items-center gap-3 rounded-2xl bg-white/5 px-3 py-3">
+        <div className="border-t border-[#e5e7eb] px-4 py-4">
+          <div className="flex items-center gap-3 rounded-2xl px-3 py-3 hover:bg-[#f3f4f6]">
             <Link to="/profile" className="flex min-w-0 flex-1 items-center gap-3">
-              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#dbe3ef] text-sm font-bold text-[#1c2f4d]">
+              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#eef2ff] text-sm font-bold text-[#4f46e5]">
                 {user ? initials(user.first_name, user.last_name, user.email) : '?'}
               </span>
               <div className="min-w-0 flex-1">
-                <p className="truncate text-sm font-semibold text-white">{displayName}</p>
-                <p className="truncate text-xs text-[#93a2bc]">{user?.email}</p>
+                <p className="truncate text-sm font-semibold text-[#111827]">{displayName}</p>
+                <p className="truncate text-xs text-[#9ca3af]">{user?.email}</p>
               </div>
             </Link>
             <button
               onClick={handleLogout}
               disabled={isLoggingOut}
               title="Log out"
-              className="rounded-full p-2 text-[#b7c2d6] hover:bg-white/10 hover:text-white disabled:cursor-not-allowed disabled:opacity-60"
+              className="rounded-full p-2 text-[#6b7280] hover:bg-white hover:text-[#111827] disabled:cursor-not-allowed disabled:opacity-60"
             >
               <LogoutIcon className="h-4.5 w-4.5" />
             </button>
@@ -218,7 +218,7 @@ function Layout() {
       </aside>
 
       <main className="flex-1 overflow-y-auto">
-        <div className="flex justify-end border-b border-black/5 bg-white px-6 py-3">
+        <div className="flex justify-end border-b border-[#e5e7eb] bg-white px-6 py-3">
           <NotificationBell />
         </div>
         <Outlet />
