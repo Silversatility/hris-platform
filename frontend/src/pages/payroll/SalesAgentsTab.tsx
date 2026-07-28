@@ -3,10 +3,11 @@ import SalesAgentFormModal from '../../components/SalesAgentFormModal'
 import { PencilIcon, PlusIcon } from '../../components/icons'
 import Spinner from '../../components/Spinner'
 import { apiClient } from '../../lib/apiClient'
-import type { PaginatedResponse, SalesAgentRecord } from '../../types'
+import type { BranchOption, PaginatedResponse, SalesAgentRecord } from '../../types'
 
 function SalesAgentsTab() {
   const [data, setData] = useState<PaginatedResponse<SalesAgentRecord> | null>(null)
+  const [branches, setBranches] = useState<BranchOption[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [isModalOpen, setIsModalOpen] = useState(false)
@@ -22,9 +23,20 @@ function SalesAgentsTab() {
       .finally(() => setIsLoading(false))
   }, [])
 
+  const loadBranches = useCallback(() => {
+    apiClient
+      .get<PaginatedResponse<BranchOption>>('/api/branches/?page_size=100')
+      .then((response) => setBranches(response.data.results))
+      .catch(() => setBranches([]))
+  }, [])
+
   useEffect(() => {
     loadAgents()
   }, [loadAgents])
+
+  useEffect(() => {
+    loadBranches()
+  }, [loadBranches])
 
   function handleAdd() {
     setEditingAgent(null)
@@ -61,6 +73,7 @@ function SalesAgentsTab() {
               <thead className="border-b border-[#e5e7eb] text-xs font-semibold text-[#9ca3af] uppercase">
                 <tr>
                   <th className="px-6 py-3">Agent</th>
+                  <th className="px-6 py-3">Branch</th>
                   <th className="px-6 py-3">Phone</th>
                   <th className="px-6 py-3">Commission Rate</th>
                   <th className="px-6 py-3">Status</th>
@@ -73,6 +86,9 @@ function SalesAgentsTab() {
                     <td className="px-6 py-4 whitespace-nowrap">
                       <p className="font-medium text-[#111827]">{agent.full_name}</p>
                       <p className="text-xs text-[#9ca3af]">{agent.agent_id}</p>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-[#6b7280]">
+                      {agent.branch_name}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-[#6b7280]">
                       {agent.phone_number || '—'}
@@ -113,6 +129,7 @@ function SalesAgentsTab() {
       <SalesAgentFormModal
         isOpen={isModalOpen}
         agent={editingAgent}
+        branches={branches}
         onClose={() => setIsModalOpen(false)}
         onSaved={loadAgents}
       />

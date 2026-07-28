@@ -1,7 +1,7 @@
 import axios from 'axios'
 import { useEffect, useState, type FormEvent } from 'react'
 import { apiClient } from '../lib/apiClient'
-import type { SalesAgentRecord } from '../types'
+import type { BranchOption, SalesAgentRecord } from '../types'
 import Modal from './Modal'
 import Spinner from './Spinner'
 
@@ -11,6 +11,7 @@ interface FormValues {
   last_name: string
   email: string
   phone_number: string
+  branch: string
   default_commission_rate: string
   status: string
   date_joined: string
@@ -26,6 +27,7 @@ const EMPTY_VALUES: FormValues = {
   last_name: '',
   email: '',
   phone_number: '',
+  branch: '',
   default_commission_rate: '',
   status: 'active',
   date_joined: '',
@@ -59,11 +61,18 @@ function labelClass() {
 interface SalesAgentFormModalProps {
   isOpen: boolean
   agent: SalesAgentRecord | null
+  branches: BranchOption[]
   onClose: () => void
   onSaved: () => void
 }
 
-function SalesAgentFormModal({ isOpen, agent, onClose, onSaved }: SalesAgentFormModalProps) {
+function SalesAgentFormModal({
+  isOpen,
+  agent,
+  branches,
+  onClose,
+  onSaved,
+}: SalesAgentFormModalProps) {
   const isEdit = agent !== null
   const [values, setValues] = useState<FormValues>(EMPTY_VALUES)
   const [error, setError] = useState<string | null>(null)
@@ -80,6 +89,7 @@ function SalesAgentFormModal({ isOpen, agent, onClose, onSaved }: SalesAgentForm
             last_name: agent.last_name,
             email: agent.email,
             phone_number: agent.phone_number,
+            branch: String(agent.branch),
             default_commission_rate: agent.default_commission_rate,
             status: agent.status,
             date_joined: agent.date_joined,
@@ -100,11 +110,12 @@ function SalesAgentFormModal({ isOpen, agent, onClose, onSaved }: SalesAgentForm
     event.preventDefault()
     setError(null)
     setIsSubmitting(true)
+    const payload = { ...values, branch: Number(values.branch) }
     try {
       if (isEdit) {
-        await apiClient.patch(`/api/sales-agents/${agent.id}/`, values)
+        await apiClient.patch(`/api/sales-agents/${agent.id}/`, payload)
       } else {
-        await apiClient.post('/api/sales-agents/', values)
+        await apiClient.post('/api/sales-agents/', payload)
       }
       onSaved()
       onClose()
@@ -163,6 +174,24 @@ function SalesAgentFormModal({ isOpen, agent, onClose, onSaved }: SalesAgentForm
               onChange={(e) => setField('phone_number', e.target.value)}
               className={inputClass()}
             />
+          </div>
+          <div className="col-span-2">
+            <label className={labelClass()}>Branch</label>
+            <select
+              required
+              value={values.branch}
+              onChange={(e) => setField('branch', e.target.value)}
+              className={inputClass()}
+            >
+              <option value="" disabled>
+                Select...
+              </option>
+              {branches.map((branch) => (
+                <option key={branch.id} value={branch.id}>
+                  {branch.name}
+                </option>
+              ))}
+            </select>
           </div>
           <div>
             <label className={labelClass()}>Default Commission Rate (%)</label>

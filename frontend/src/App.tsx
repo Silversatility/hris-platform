@@ -2,6 +2,7 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import Layout from './components/Layout'
 import ProtectedRoute from './components/ProtectedRoute'
 import { AuthProvider } from './context/AuthContext'
+import Branches from './pages/Branches'
 import ComingSoon from './pages/ComingSoon'
 import Departments from './pages/Departments'
 import Employees from './pages/Employees'
@@ -28,6 +29,7 @@ function App() {
               <Route path="/profile" element={<Profile />} />
               <Route path="/employees" element={<Employees />} />
               <Route path="/departments" element={<Departments />} />
+              <Route path="/branches" element={<Branches />} />
               <Route path="/leave-requests" element={<LeaveRequests />} />
               <Route path="/leave-calendar" element={<LeaveCalendar />} />
               <Route path="/payroll" element={<Payroll />} />

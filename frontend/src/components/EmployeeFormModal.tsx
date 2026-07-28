@@ -1,7 +1,7 @@
 import axios from 'axios'
 import { useEffect, useState, type FormEvent } from 'react'
 import { apiClient } from '../lib/apiClient'
-import type { DepartmentOption, EmployeeRecord } from '../types'
+import type { BranchOption, DepartmentOption, EmployeeRecord } from '../types'
 import Modal from './Modal'
 import Spinner from './Spinner'
 
@@ -30,6 +30,7 @@ interface FormValues {
   password: string
   employee_id: string
   department: string
+  branch: string
   manager: string
   job_title: string
   employment_type: string
@@ -53,6 +54,7 @@ const EMPTY_VALUES: FormValues = {
   password: '',
   employee_id: '',
   department: '',
+  branch: '',
   manager: '',
   job_title: '',
   employment_type: 'full_time',
@@ -78,6 +80,7 @@ function valuesFromEmployee(employee: EmployeeRecord): FormValues {
     password: '',
     employee_id: employee.employee_id,
     department: String(employee.department),
+    branch: String(employee.branch),
     manager: employee.manager ? String(employee.manager) : '',
     job_title: employee.job_title,
     employment_type: employee.employment_type,
@@ -99,6 +102,7 @@ interface EmployeeFormModalProps {
   isOpen: boolean
   employee: EmployeeRecord | null
   departments: DepartmentOption[]
+  branches: BranchOption[]
   managers: ManagerOption[]
   onClose: () => void
   onSaved: () => void
@@ -116,6 +120,7 @@ function EmployeeFormModal({
   isOpen,
   employee,
   departments,
+  branches,
   managers,
   onClose,
   onSaved,
@@ -145,6 +150,7 @@ function EmployeeFormModal({
       first_name: values.first_name,
       last_name: values.last_name,
       department: Number(values.department),
+      branch: Number(values.branch),
       manager: values.manager ? Number(values.manager) : null,
       job_title: values.job_title,
       employment_type: values.employment_type,
@@ -282,6 +288,24 @@ function EmployeeFormModal({
                 {departments.map((department) => (
                   <option key={department.id} value={department.id}>
                     {department.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className={labelClass()}>Branch</label>
+              <select
+                required
+                value={values.branch}
+                onChange={(e) => setField('branch', e.target.value)}
+                className={inputClass()}
+              >
+                <option value="" disabled>
+                  Select...
+                </option>
+                {branches.map((branch) => (
+                  <option key={branch.id} value={branch.id}>
+                    {branch.name}
                   </option>
                 ))}
               </select>

@@ -6,6 +6,8 @@ export interface EmployeeRecord {
   employee_id: string
   department: number
   department_name: string
+  branch: number
+  branch_name: string
   manager: number | null
   manager_name: string | null
   job_title: string
@@ -32,6 +34,20 @@ export interface DepartmentRecord {
   id: number
   name: string
   code: string
+  is_active: boolean
+  employee_count: number
+}
+
+export interface BranchOption {
+  id: number
+  name: string
+}
+
+export interface BranchRecord {
+  id: number
+  name: string
+  code: string
+  address: string
   is_active: boolean
   employee_count: number
 }
@@ -76,6 +92,8 @@ export interface LeaveRequestRecord {
 export interface SalesAgentRecord {
   id: number
   agent_id: string
+  branch: number
+  branch_name: string
   first_name: string
   last_name: string
   full_name: string

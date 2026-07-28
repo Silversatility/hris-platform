@@ -43,6 +43,7 @@ const NAV_STRUCTURE: NavEntry[] = [
     items: [
       { to: '/employees', label: 'Employees' },
       { to: '/departments', label: 'Departments' },
+      { to: '/branches', label: 'Branches' },
     ],
   },
   {

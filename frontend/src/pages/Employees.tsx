@@ -4,7 +4,7 @@ import { PencilIcon, PlusIcon, SearchIcon, TrashIcon } from '../components/icons
 import Spinner from '../components/Spinner'
 import { useAuth } from '../context/AuthContext'
 import { apiClient } from '../lib/apiClient'
-import type { DepartmentRecord, EmployeeRecord, PaginatedResponse } from '../types'
+import type { BranchOption, DepartmentRecord, EmployeeRecord, PaginatedResponse } from '../types'
 
 const STATUS_STYLES: Record<string, string> = {
   active: 'bg-emerald-100 text-emerald-700',
@@ -38,6 +38,7 @@ function Employees() {
   const isStaff = Boolean(user?.is_staff)
 
   const [departments, setDepartments] = useState<DepartmentRecord[]>([])
+  const [branches, setBranches] = useState<BranchOption[]>([])
   const [selectedDeptId, setSelectedDeptId] = useState<number | null>(null)
   const [employees, setEmployees] = useState<EmployeeRecord[]>([])
   const [isLoadingDepartments, setIsLoadingDepartments] = useState(true)
@@ -80,9 +81,20 @@ function Employees() {
       .catch(() => setManagerOptions([]))
   }, [isStaff])
 
+  const loadBranches = useCallback(() => {
+    apiClient
+      .get<PaginatedResponse<BranchOption>>('/api/branches/?page_size=100')
+      .then((response) => setBranches(response.data.results))
+      .catch(() => setBranches([]))
+  }, [])
+
   useEffect(() => {
     loadDepartments()
   }, [loadDepartments])
+
+  useEffect(() => {
+    loadBranches()
+  }, [loadBranches])
 
   useEffect(() => {
     loadEmployees()
@@ -106,6 +118,7 @@ function Employees() {
     loadEmployees()
     loadDepartments()
     loadManagerOptions()
+    loadBranches()
   }
 
   async function handleDelete(employee: EmployeeRecord) {
@@ -120,6 +133,7 @@ function Employees() {
       loadEmployees()
       loadDepartments()
       loadManagerOptions()
+      loadBranches()
     } catch {
       window.alert('Failed to delete employee.')
     }
@@ -280,6 +294,10 @@ function Employees() {
                         <span className="text-[#111827]">{employee.phone_number || '—'}</span>
                       </div>
                       <div className="flex justify-between">
+                        <span className="text-[#9ca3af]">Branch</span>
+                        <span className="text-[#111827]">{employee.branch_name}</span>
+                      </div>
+                      <div className="flex justify-between">
                         <span className="text-[#9ca3af]">Manager</span>
                         <span className="text-[#111827]">{employee.manager_name ?? '—'}</span>
                       </div>
@@ -311,6 +329,7 @@ function Employees() {
           isOpen={isModalOpen}
           employee={editingEmployee}
           departments={departments}
+          branches={branches}
           managers={managerSelectOptions}
           onClose={() => setIsModalOpen(false)}
           onSaved={handleSaved}
