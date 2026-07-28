@@ -96,7 +96,7 @@ function PayRunDetail({ payRun }: { payRun: PayRunRecord }) {
         {payslips.length > 0 ? (
           <div className="overflow-x-auto rounded-xl ring-1 ring-[#f0ece0]">
             <table className="w-full text-left text-sm">
-              <thead className="bg-[#faf6ec] text-xs font-semibold text-[#5a6a85] uppercase">
+              <thead className="bg-gradient-to-b from-[#1c2f4d] to-[#0d1b30] text-xs font-semibold text-[#dbe3ef] uppercase">
                 <tr>
                   <th className="px-4 py-2">Employee</th>
                   <th className="px-4 py-2">Base Salary</th>
@@ -153,7 +153,7 @@ function PayRunDetail({ payRun }: { payRun: PayRunRecord }) {
         {payouts.length > 0 ? (
           <div className="overflow-x-auto rounded-xl ring-1 ring-[#f0ece0]">
             <table className="w-full text-left text-sm">
-              <thead className="bg-[#faf6ec] text-xs font-semibold text-[#5a6a85] uppercase">
+              <thead className="bg-gradient-to-b from-[#1c2f4d] to-[#0d1b30] text-xs font-semibold text-[#dbe3ef] uppercase">
                 <tr>
                   <th className="px-4 py-2">Agent</th>
                   <th className="px-4 py-2">Sales Counted</th>
@@ -290,7 +290,7 @@ function PayRunsTab() {
           <p className="p-8 text-center text-sm text-red-500">{error}</p>
         ) : data && data.results.length > 0 ? (
           <table className="w-full text-left text-sm">
-            <thead className="bg-[#faf6ec] text-xs font-semibold text-[#5a6a85] uppercase">
+            <thead className="bg-gradient-to-b from-[#1c2f4d] to-[#0d1b30] text-xs font-semibold text-[#dbe3ef] uppercase">
               <tr>
                 <th className="px-6 py-3">Period</th>
                 <th className="px-6 py-3">Pay Date</th>
