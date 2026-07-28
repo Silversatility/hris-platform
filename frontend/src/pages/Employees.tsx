@@ -1,19 +1,15 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import EmployeeFormModal from '../components/EmployeeFormModal'
-import { ChevronDownIcon, PencilIcon, PlusIcon, TrashIcon } from '../components/icons'
+import { PencilIcon, PlusIcon, SearchIcon, TrashIcon } from '../components/icons'
 import Spinner from '../components/Spinner'
 import { useAuth } from '../context/AuthContext'
 import { apiClient } from '../lib/apiClient'
-import type { DepartmentOption, EmployeeRecord, PaginatedResponse } from '../types'
+import type { DepartmentRecord, EmployeeRecord, PaginatedResponse } from '../types'
 
 const STATUS_STYLES: Record<string, string> = {
   active: 'bg-emerald-100 text-emerald-700',
   on_leave: 'bg-amber-100 text-amber-700',
   terminated: 'bg-rose-100 text-rose-700',
-}
-
-function employeesUrl(departmentId: string) {
-  return departmentId ? `/api/employees/?department=${departmentId}` : '/api/employees/'
 }
 
 async function fetchAllEmployees(): Promise<EmployeeRecord[]> {
@@ -30,29 +26,52 @@ async function fetchAllEmployees(): Promise<EmployeeRecord[]> {
   return results
 }
 
+function initials(name: string) {
+  const parts = name.trim().split(/\s+/)
+  const first = parts[0]?.[0] ?? ''
+  const last = parts.length > 1 ? (parts[parts.length - 1]?.[0] ?? '') : ''
+  return `${first}${last}`.toUpperCase() || '?'
+}
+
 function Employees() {
   const { user } = useAuth()
   const isStaff = Boolean(user?.is_staff)
 
-  const [departmentFilter, setDepartmentFilter] = useState('')
-  const [departments, setDepartments] = useState<DepartmentOption[]>([])
-  const [url, setUrl] = useState(() => employeesUrl(''))
-  const [data, setData] = useState<PaginatedResponse<EmployeeRecord> | null>(null)
-  const [isLoading, setIsLoading] = useState(true)
+  const [departments, setDepartments] = useState<DepartmentRecord[]>([])
+  const [selectedDeptId, setSelectedDeptId] = useState<number | null>(null)
+  const [employees, setEmployees] = useState<EmployeeRecord[]>([])
+  const [isLoadingDepartments, setIsLoadingDepartments] = useState(true)
+  const [isLoadingEmployees, setIsLoadingEmployees] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [search, setSearch] = useState('')
   const [managerOptions, setManagerOptions] = useState<EmployeeRecord[]>([])
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [editingEmployee, setEditingEmployee] = useState<EmployeeRecord | null>(null)
 
+  const loadDepartments = useCallback(() => {
+    setIsLoadingDepartments(true)
+    apiClient
+      .get<PaginatedResponse<DepartmentRecord>>('/api/departments/?page_size=100')
+      .then((response) => {
+        setDepartments(response.data.results)
+        setSelectedDeptId((current) => current ?? response.data.results[0]?.id ?? null)
+      })
+      .catch(() => setError('Failed to load departments.'))
+      .finally(() => setIsLoadingDepartments(false))
+  }, [])
+
   const loadEmployees = useCallback(() => {
-    setIsLoading(true)
+    if (selectedDeptId === null) return
+    setIsLoadingEmployees(true)
     setError(null)
     apiClient
-      .get<PaginatedResponse<EmployeeRecord>>(url)
-      .then((response) => setData(response.data))
+      .get<PaginatedResponse<EmployeeRecord>>(
+        `/api/employees/?department=${selectedDeptId}&page_size=100`
+      )
+      .then((response) => setEmployees(response.data.results))
       .catch(() => setError('Failed to load employees.'))
-      .finally(() => setIsLoading(false))
-  }, [url])
+      .finally(() => setIsLoadingEmployees(false))
+  }, [selectedDeptId])
 
   const loadManagerOptions = useCallback(() => {
     if (!isStaff) return
@@ -62,15 +81,8 @@ function Employees() {
   }, [isStaff])
 
   useEffect(() => {
-    apiClient
-      .get<PaginatedResponse<DepartmentOption>>('/api/departments/')
-      .then((response) => setDepartments(response.data.results))
-      .catch(() => setDepartments([]))
-  }, [])
-
-  useEffect(() => {
-    setUrl(employeesUrl(departmentFilter))
-  }, [departmentFilter])
+    loadDepartments()
+  }, [loadDepartments])
 
   useEffect(() => {
     loadEmployees()
@@ -92,6 +104,7 @@ function Employees() {
 
   function handleSaved() {
     loadEmployees()
+    loadDepartments()
     loadManagerOptions()
   }
 
@@ -105,6 +118,7 @@ function Employees() {
     try {
       await apiClient.delete(`/api/employees/${employee.id}/`)
       loadEmployees()
+      loadDepartments()
       loadManagerOptions()
     } catch {
       window.alert('Failed to delete employee.')
@@ -116,138 +130,180 @@ function Employees() {
     label: manager.full_name || manager.user_email,
   }))
 
+  const selectedDepartment = departments.find((d) => d.id === selectedDeptId) ?? null
+
+  const visibleEmployees = useMemo(() => {
+    const query = search.trim().toLowerCase()
+    if (!query) return employees
+    return employees.filter((employee) =>
+      (employee.full_name || employee.user_email).toLowerCase().includes(query)
+    )
+  }, [employees, search])
+
   return (
     <div className="p-8">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold text-[#1c2f4d]">Employees</h1>
-
-        <div className="flex items-center gap-3">
-          <div className="relative">
-            <select
-              value={departmentFilter}
-              onChange={(event) => setDepartmentFilter(event.target.value)}
-              className="appearance-none rounded-full bg-white py-2 pr-11 pl-4 text-sm text-[#1c2f4d] shadow-sm ring-1 ring-[#e7ded0] outline-none focus:ring-2 focus:ring-[#1c2f4d]"
-            >
-              <option value="">All Departments</option>
-              {departments.map((department) => (
-                <option key={department.id} value={department.id}>
-                  {department.name}
-                </option>
-              ))}
-            </select>
-            <ChevronDownIcon className="pointer-events-none absolute top-1/2 right-4 h-4 w-4 -translate-y-1/2 text-[#5a6a85]" />
-          </div>
-
-          {isStaff && (
-            <button
-              onClick={handleAdd}
-              className="inline-flex items-center gap-2 rounded-full bg-gradient-to-br from-[#1c2f4d] to-[#0d1b30] px-4 py-2 text-sm font-bold text-[#f4efe2] shadow-sm"
-            >
-              <PlusIcon className="h-4 w-4" />
-              Add Employee
-            </button>
-          )}
+        <div className="relative">
+          <SearchIcon className="pointer-events-none absolute top-1/2 left-4 h-4 w-4 -translate-y-1/2 text-[#93a2bc]" />
+          <input
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search employees..."
+            className="rounded-full bg-white py-2 pr-4 pl-10 text-sm text-[#1c2f4d] shadow-sm ring-1 ring-[#e7ded0] outline-none focus:ring-2 focus:ring-[#1c2f4d]"
+          />
         </div>
       </div>
 
-      <div className="mt-8 overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-black/5">
-        {isLoading ? (
-          <div className="flex items-center justify-center p-16">
-            <Spinner className="h-8 w-8 text-[#1c2f4d]" />
+      {error && (
+        <p className="mt-4 rounded-xl bg-rose-50 px-4 py-3 text-sm text-rose-600">{error}</p>
+      )}
+
+      <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-[300px_1fr]">
+        <div className="space-y-3">
+          <div className="rounded-2xl bg-white p-4 shadow-sm ring-1 ring-black/5">
+            <p className="text-xs font-semibold text-[#5a6a85] uppercase">Departments</p>
+            <p className="mt-1 text-lg font-bold text-[#1c2f4d]">
+              {isLoadingDepartments ? '—' : departments.length}
+            </p>
           </div>
-        ) : error ? (
-          <p className="p-8 text-center text-sm text-red-500">{error}</p>
-        ) : data && data.results.length > 0 ? (
-          <>
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-sm">
-                <thead className="bg-[#faf6ec] text-xs font-semibold text-[#5a6a85] uppercase">
-                  <tr>
-                    <th className="px-6 py-3">Employee</th>
-                    <th className="px-6 py-3">Job Title</th>
-                    <th className="px-6 py-3">Department</th>
-                    <th className="px-6 py-3">Manager</th>
-                    <th className="px-6 py-3">Status</th>
-                    {isStaff && <th className="px-6 py-3">Actions</th>}
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-[#f0ece0]">
-                  {data.results.map((employee) => (
-                    <tr key={employee.id}>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <p className="font-medium text-[#1c2f4d]">
-                          {employee.full_name || employee.user_email}
-                        </p>
-                        <p className="text-xs text-[#93a2bc]">{employee.employee_id}</p>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-[#5a6a85]">
-                        {employee.job_title}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-[#5a6a85]">
-                        {employee.department_name}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-[#5a6a85]">
-                        {employee.manager_name ?? '—'}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
+
+          {isLoadingDepartments ? (
+            <div className="flex items-center justify-center rounded-2xl bg-white p-8 shadow-sm ring-1 ring-black/5">
+              <Spinner className="h-6 w-6 text-[#1c2f4d]" />
+            </div>
+          ) : (
+            departments.map((department) => {
+              const isSelected = department.id === selectedDeptId
+              return (
+                <button
+                  key={department.id}
+                  onClick={() => setSelectedDeptId(department.id)}
+                  className={`w-full rounded-2xl p-4 text-left shadow-sm ring-1 transition-colors ${
+                    isSelected
+                      ? 'bg-[#1c2f4d] text-white ring-[#1c2f4d]'
+                      : 'bg-white text-[#1c2f4d] ring-black/5 hover:bg-[#faf6ec]'
+                  }`}
+                >
+                  <div className="flex items-center justify-between">
+                    <p className="font-semibold">{department.name}</p>
+                    {!department.is_active && (
+                      <span
+                        className={`rounded-full px-2 py-0.5 text-[10px] font-semibold ${
+                          isSelected ? 'bg-white/20 text-white' : 'bg-slate-100 text-slate-600'
+                        }`}
+                      >
+                        Inactive
+                      </span>
+                    )}
+                  </div>
+                  <p className={`text-xs ${isSelected ? 'text-[#b7c2d6]' : 'text-[#93a2bc]'}`}>
+                    {department.code}
+                  </p>
+                  <p className={`mt-2 text-xs font-semibold ${isSelected ? 'text-[#dbe3ef]' : 'text-[#5a6a85]'}`}>
+                    {department.employee_count} employee{department.employee_count === 1 ? '' : 's'}
+                  </p>
+                </button>
+              )
+            })
+          )}
+        </div>
+
+        <div>
+          <div className="flex items-center justify-between rounded-2xl bg-white p-4 shadow-sm ring-1 ring-black/5">
+            <h2 className="text-lg font-bold text-[#1c2f4d]">
+              {selectedDepartment ? selectedDepartment.name : 'Select a department'}
+            </h2>
+            {isStaff && (
+              <button
+                onClick={handleAdd}
+                className="inline-flex items-center gap-2 rounded-full bg-gradient-to-br from-[#1c2f4d] to-[#0d1b30] px-4 py-2 text-sm font-bold text-[#f4efe2] shadow-sm"
+              >
+                <PlusIcon className="h-4 w-4" />
+                Add Employee
+              </button>
+            )}
+          </div>
+
+          <div className="mt-4">
+            {isLoadingEmployees ? (
+              <div className="flex items-center justify-center rounded-2xl bg-white p-16 shadow-sm ring-1 ring-black/5">
+                <Spinner className="h-8 w-8 text-[#1c2f4d]" />
+              </div>
+            ) : visibleEmployees.length > 0 ? (
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                {visibleEmployees.map((employee) => (
+                  <div
+                    key={employee.id}
+                    className="rounded-2xl bg-white p-4 shadow-sm ring-1 ring-black/5"
+                  >
+                    <div className="flex items-start justify-between">
+                      <div className="flex items-center gap-3">
+                        <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#dbe3ef] text-sm font-bold text-[#1c2f4d]">
+                          {initials(employee.full_name || employee.user_email)}
+                        </span>
+                        <div>
+                          <p className="font-semibold text-[#1c2f4d]">
+                            {employee.full_name || employee.user_email}
+                          </p>
+                          <p className="text-xs text-[#5a6a85]">{employee.job_title}</p>
+                        </div>
+                      </div>
+                      {isStaff && (
+                        <div className="flex gap-1">
+                          <button
+                            onClick={() => handleEdit(employee)}
+                            title="Edit"
+                            className="rounded-full p-1.5 text-[#5a6a85] hover:bg-[#f4efe2] hover:text-[#1c2f4d]"
+                          >
+                            <PencilIcon className="h-4 w-4" />
+                          </button>
+                          <button
+                            onClick={() => handleDelete(employee)}
+                            title="Delete"
+                            className="rounded-full p-1.5 text-[#5a6a85] hover:bg-rose-50 hover:text-rose-600"
+                          >
+                            <TrashIcon className="h-4 w-4" />
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                    <div className="mt-4 space-y-1.5 text-xs">
+                      <div className="flex justify-between">
+                        <span className="text-[#93a2bc]">Email</span>
+                        <span className="text-[#1c2f4d]">
+                          {employee.personal_email || employee.user_email}
+                        </span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-[#93a2bc]">Phone</span>
+                        <span className="text-[#1c2f4d]">{employee.phone_number || '—'}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-[#93a2bc]">Manager</span>
+                        <span className="text-[#1c2f4d]">{employee.manager_name ?? '—'}</span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-[#93a2bc]">Status</span>
                         <span
-                          className={`rounded-full px-2.5 py-0.5 text-xs font-semibold capitalize ${
+                          className={`rounded-full px-2 py-0.5 text-[10px] font-semibold capitalize ${
                             STATUS_STYLES[employee.status] ?? 'bg-slate-100 text-slate-700'
                           }`}
                         >
                           {employee.status.replace('_', ' ')}
                         </span>
-                      </td>
-                      {isStaff && (
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="flex gap-1">
-                            <button
-                              onClick={() => handleEdit(employee)}
-                              title="Edit"
-                              className="rounded-full p-1.5 text-[#5a6a85] hover:bg-[#f4efe2] hover:text-[#1c2f4d]"
-                            >
-                              <PencilIcon className="h-4 w-4" />
-                            </button>
-                            <button
-                              onClick={() => handleDelete(employee)}
-                              title="Delete"
-                              className="rounded-full p-1.5 text-[#5a6a85] hover:bg-rose-50 hover:text-rose-600"
-                            >
-                              <TrashIcon className="h-4 w-4" />
-                            </button>
-                          </div>
-                        </td>
-                      )}
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-            <div className="flex items-center justify-between border-t border-[#f0ece0] px-6 py-4 text-sm text-[#5a6a85]">
-              <span>
-                {data.count} employee{data.count === 1 ? '' : 's'}
-              </span>
-              <div className="flex gap-2">
-                <button
-                  onClick={() => data.previous && setUrl(data.previous)}
-                  disabled={!data.previous}
-                  className="rounded-full px-3 py-1.5 font-medium text-[#1c2f4d] ring-1 ring-[#e7ded0] disabled:cursor-not-allowed disabled:opacity-40"
-                >
-                  Previous
-                </button>
-                <button
-                  onClick={() => data.next && setUrl(data.next)}
-                  disabled={!data.next}
-                  className="rounded-full px-3 py-1.5 font-medium text-[#1c2f4d] ring-1 ring-[#e7ded0] disabled:cursor-not-allowed disabled:opacity-40"
-                >
-                  Next
-                </button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
               </div>
-            </div>
-          </>
-        ) : (
-          <p className="p-8 text-center text-sm text-[#5a6a85]">No employees found.</p>
-        )}
+            ) : (
+              <p className="rounded-2xl bg-white p-8 text-center text-sm text-[#5a6a85] shadow-sm ring-1 ring-black/5">
+                {search ? 'No employees match your search.' : 'No employees in this department.'}
+              </p>
+            )}
+          </div>
+        </div>
       </div>
 
       {isStaff && (
