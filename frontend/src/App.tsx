@@ -6,6 +6,7 @@ import ComingSoon from './pages/ComingSoon'
 import Departments from './pages/Departments'
 import Employees from './pages/Employees'
 import Home from './pages/Home'
+import LeaveCalendar from './pages/LeaveCalendar'
 import LeaveRequests from './pages/LeaveRequests'
 import Login from './pages/Login'
 import NotFound from './pages/NotFound'
@@ -28,6 +29,7 @@ function App() {
               <Route path="/employees" element={<Employees />} />
               <Route path="/departments" element={<Departments />} />
               <Route path="/leave-requests" element={<LeaveRequests />} />
+              <Route path="/leave-calendar" element={<LeaveCalendar />} />
               <Route path="/payroll" element={<Payroll />} />
               <Route path="/tickets" element={<Tickets />} />
               <Route path="/settings" element={<ComingSoon title="Settings" />} />

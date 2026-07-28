@@ -49,7 +49,10 @@ const NAV_STRUCTURE: NavEntry[] = [
     type: 'group',
     label: 'Time Off',
     icon: CalendarIcon,
-    items: [{ to: '/leave-requests', label: 'Leave Requests' }],
+    items: [
+      { to: '/leave-requests', label: 'Leave Requests' },
+      { to: '/leave-calendar', label: 'Calendar' },
+    ],
   },
   {
     type: 'group',
