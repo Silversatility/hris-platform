@@ -172,7 +172,12 @@ function Tickets() {
                   <tbody className="divide-y divide-[#f0ece0]">
                     {data.results.map((ticket) => (
                       <Fragment key={ticket.id}>
-                        <tr>
+                        <tr
+                          onClick={() =>
+                            setExpandedId(expandedId === ticket.id ? null : ticket.id)
+                          }
+                          className="cursor-pointer transition-colors hover:bg-[#faf6ec]"
+                        >
                           <td className="px-6 py-4 whitespace-nowrap text-[#1c2f4d]">
                             <p className="font-medium">{ticket.ticket_number}</p>
                             <p className="text-xs text-[#5a6a85]">{ticket.subject}</p>
@@ -200,12 +205,18 @@ function Tickets() {
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
                             <button
-                              onClick={() =>
+                              onClick={(e) => {
+                                e.stopPropagation()
                                 setExpandedId(expandedId === ticket.id ? null : ticket.id)
-                              }
-                              className="rounded-full px-3 py-1 text-xs font-semibold text-[#1c2f4d] ring-1 ring-[#e7ded0] hover:bg-[#f4efe2]"
+                              }}
+                              className="flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold text-[#1c2f4d] ring-1 ring-[#e7ded0] hover:bg-white"
                             >
                               {expandedId === ticket.id ? 'Hide' : 'View'}
+                              <ChevronDownIcon
+                                className={`h-3.5 w-3.5 transition-transform ${
+                                  expandedId === ticket.id ? 'rotate-180' : ''
+                                }`}
+                              />
                             </button>
                           </td>
                         </tr>
