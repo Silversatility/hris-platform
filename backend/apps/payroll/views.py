@@ -94,7 +94,7 @@ class PayslipViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         queryset = Payslip.objects.select_related(
-            "employee", "employee__user", "pay_run"
+            "employee", "employee__user", "employee__department", "pay_run"
         ).prefetch_related("line_items")
         if self.request.user.is_staff:
             return queryset

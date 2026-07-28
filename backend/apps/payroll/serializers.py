@@ -88,6 +88,13 @@ class PayslipLineItemSerializer(serializers.ModelSerializer):
 class PayslipSerializer(serializers.ModelSerializer):
     employee_display_name = serializers.SerializerMethodField()
     employee_code = serializers.CharField(source="employee.employee_id", read_only=True)
+    employee_job_title = serializers.CharField(source="employee.job_title", read_only=True)
+    employee_department = serializers.CharField(
+        source="employee.department.name", read_only=True
+    )
+    pay_period_start = serializers.DateField(source="pay_run.start_date", read_only=True)
+    pay_period_end = serializers.DateField(source="pay_run.end_date", read_only=True)
+    pay_date = serializers.DateField(source="pay_run.pay_date", read_only=True)
     line_items = PayslipLineItemSerializer(many=True, read_only=True)
     gross_pay = serializers.DecimalField(max_digits=12, decimal_places=2, read_only=True)
     total_deductions = serializers.DecimalField(max_digits=12, decimal_places=2, read_only=True)
@@ -101,6 +108,11 @@ class PayslipSerializer(serializers.ModelSerializer):
             "employee",
             "employee_display_name",
             "employee_code",
+            "employee_job_title",
+            "employee_department",
+            "pay_period_start",
+            "pay_period_end",
+            "pay_date",
             "base_salary",
             "gross_pay",
             "total_deductions",

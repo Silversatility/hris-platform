@@ -290,6 +290,24 @@ def test_employee_cannot_create_sales_agent(employee):
     assert response.status_code == 403
 
 
+def test_payslip_includes_pay_period_and_employee_details(staff_user, employee, pay_run):
+    payslip = Payslip.objects.create(
+        pay_run=pay_run, employee=employee, base_salary=employee.salary
+    )
+    client = APIClient()
+    client.force_authenticate(staff_user)
+
+    response = client.get(reverse("payslip-detail", args=[payslip.id]))
+
+    assert response.status_code == 200
+    data = response.json()
+    assert data["employee_job_title"] == "Software Engineer"
+    assert data["employee_department"] == "Engineering"
+    assert data["pay_period_start"] == "2026-08-01"
+    assert data["pay_period_end"] == "2026-08-15"
+    assert data["pay_date"] == "2026-08-20"
+
+
 def test_staff_can_mark_payslip_paid_after_completion(staff_user, employee, pay_run):
     payslip = Payslip.objects.create(
         pay_run=pay_run, employee=employee, base_salary=employee.salary
