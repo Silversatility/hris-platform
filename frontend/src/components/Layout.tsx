@@ -11,6 +11,7 @@ import {
   SettingsIcon,
   WalletIcon,
 } from './icons'
+import NotificationBell from './NotificationBell'
 
 const NAV_ITEMS = [
   { to: '/', label: 'Dashboard', icon: DashboardIcon, end: true },
@@ -104,6 +105,9 @@ function Layout() {
       </aside>
 
       <main className="flex-1 overflow-y-auto">
+        <div className="flex justify-end border-b border-black/5 bg-white px-6 py-3">
+          <NotificationBell />
+        </div>
         <Outlet />
       </main>
     </div>

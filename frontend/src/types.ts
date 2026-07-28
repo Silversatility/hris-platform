@@ -164,6 +164,14 @@ export interface CommissionPayoutRecord {
   generated_at: string
 }
 
+export interface NotificationRecord {
+  id: number
+  message: string
+  link: string
+  is_read: boolean
+  created_at: string
+}
+
 export interface PaginatedResponse<T> {
   count: number
   next: string | null

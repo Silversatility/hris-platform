@@ -151,6 +151,25 @@ export function WalletIcon({ className }: IconProps) {
   )
 }
 
+export function BellIcon({ className }: IconProps) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" className={className}>
+      <path
+        d="M6 10a6 6 0 1 1 12 0c0 3.5 1 5 1.5 5.5H4.5C5 15 6 13.5 6 10Z"
+        stroke="currentColor"
+        strokeWidth="1.75"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M10 18.5a2 2 0 0 0 4 0"
+        stroke="currentColor"
+        strokeWidth="1.75"
+        strokeLinecap="round"
+      />
+    </svg>
+  )
+}
+
 export function LogoutIcon({ className }: IconProps) {
   return (
     <svg viewBox="0 0 24 24" fill="none" className={className}>
