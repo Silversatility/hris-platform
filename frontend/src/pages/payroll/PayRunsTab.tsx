@@ -96,7 +96,7 @@ function PayRunDetail({ payRun }: { payRun: PayRunRecord }) {
         {payslips.length > 0 ? (
           <div className="overflow-x-auto rounded-xl ring-1 ring-[#f0ece0]">
             <table className="w-full text-left text-sm">
-              <thead className="bg-gradient-to-b from-[#1c2f4d] to-[#0d1b30] text-xs font-semibold text-[#dbe3ef] uppercase">
+              <thead className="bg-[#faf6ec] text-xs font-semibold text-[#5a6a85] uppercase">
                 <tr>
                   <th className="px-4 py-2">Employee</th>
                   <th className="px-4 py-2">Base Salary</th>
@@ -109,8 +109,9 @@ function PayRunDetail({ payRun }: { payRun: PayRunRecord }) {
               <tbody className="divide-y divide-[#f0ece0]">
                 {payslips.map((payslip) => (
                   <tr key={payslip.id}>
-                    <td className="px-4 py-2 text-[#1c2f4d]">
-                      {payslip.employee_display_name} ({payslip.employee_code})
+                    <td className="px-4 py-2">
+                      <p className="text-[#1c2f4d]">{payslip.employee_display_name}</p>
+                      <p className="text-xs text-[#93a2bc]">{payslip.employee_code}</p>
                     </td>
                     <td className="px-4 py-2 text-[#5a6a85]">{payslip.base_salary}</td>
                     <td className="px-4 py-2 text-[#5a6a85]">{payslip.gross_pay}</td>
@@ -153,7 +154,7 @@ function PayRunDetail({ payRun }: { payRun: PayRunRecord }) {
         {payouts.length > 0 ? (
           <div className="overflow-x-auto rounded-xl ring-1 ring-[#f0ece0]">
             <table className="w-full text-left text-sm">
-              <thead className="bg-gradient-to-b from-[#1c2f4d] to-[#0d1b30] text-xs font-semibold text-[#dbe3ef] uppercase">
+              <thead className="bg-[#faf6ec] text-xs font-semibold text-[#5a6a85] uppercase">
                 <tr>
                   <th className="px-4 py-2">Agent</th>
                   <th className="px-4 py-2">Sales Counted</th>
@@ -290,7 +291,7 @@ function PayRunsTab() {
           <p className="p-8 text-center text-sm text-red-500">{error}</p>
         ) : data && data.results.length > 0 ? (
           <table className="w-full text-left text-sm">
-            <thead className="bg-gradient-to-b from-[#1c2f4d] to-[#0d1b30] text-xs font-semibold text-[#dbe3ef] uppercase">
+            <thead className="bg-[#faf6ec] text-xs font-semibold text-[#5a6a85] uppercase">
               <tr>
                 <th className="px-6 py-3">Period</th>
                 <th className="px-6 py-3">Pay Date</th>

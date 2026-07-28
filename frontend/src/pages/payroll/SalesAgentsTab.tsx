@@ -58,10 +58,9 @@ function SalesAgentsTab() {
         ) : data && data.results.length > 0 ? (
           <div className="overflow-x-auto">
             <table className="w-full text-left text-sm">
-              <thead className="bg-gradient-to-b from-[#1c2f4d] to-[#0d1b30] text-xs font-semibold text-[#dbe3ef] uppercase">
+              <thead className="bg-[#faf6ec] text-xs font-semibold text-[#5a6a85] uppercase">
                 <tr>
-                  <th className="px-6 py-3">Agent ID</th>
-                  <th className="px-6 py-3">Name</th>
+                  <th className="px-6 py-3">Agent</th>
                   <th className="px-6 py-3">Phone</th>
                   <th className="px-6 py-3">Commission Rate</th>
                   <th className="px-6 py-3">Status</th>
@@ -71,11 +70,9 @@ function SalesAgentsTab() {
               <tbody className="divide-y divide-[#f0ece0]">
                 {data.results.map((agent) => (
                   <tr key={agent.id}>
-                    <td className="px-6 py-4 font-medium whitespace-nowrap text-[#1c2f4d]">
-                      {agent.agent_id}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-[#1c2f4d]">
-                      {agent.full_name}
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <p className="font-medium text-[#1c2f4d]">{agent.full_name}</p>
+                      <p className="text-xs text-[#93a2bc]">{agent.agent_id}</p>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-[#5a6a85]">
                       {agent.phone_number || '—'}

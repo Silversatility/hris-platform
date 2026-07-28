@@ -161,10 +161,9 @@ function Employees() {
           <>
             <div className="overflow-x-auto">
               <table className="w-full text-left text-sm">
-                <thead className="bg-gradient-to-b from-[#1c2f4d] to-[#0d1b30] text-xs font-semibold text-[#dbe3ef] uppercase">
+                <thead className="bg-[#faf6ec] text-xs font-semibold text-[#5a6a85] uppercase">
                   <tr>
-                    <th className="px-6 py-3">Employee ID</th>
-                    <th className="px-6 py-3">Name</th>
+                    <th className="px-6 py-3">Employee</th>
                     <th className="px-6 py-3">Job Title</th>
                     <th className="px-6 py-3">Department</th>
                     <th className="px-6 py-3">Manager</th>
@@ -175,11 +174,11 @@ function Employees() {
                 <tbody className="divide-y divide-[#f0ece0]">
                   {data.results.map((employee) => (
                     <tr key={employee.id}>
-                      <td className="px-6 py-4 font-medium whitespace-nowrap text-[#1c2f4d]">
-                        {employee.employee_id}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-[#1c2f4d]">
-                        {employee.full_name || employee.user_email}
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <p className="font-medium text-[#1c2f4d]">
+                          {employee.full_name || employee.user_email}
+                        </p>
+                        <p className="text-xs text-[#93a2bc]">{employee.employee_id}</p>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-[#5a6a85]">
                         {employee.job_title}

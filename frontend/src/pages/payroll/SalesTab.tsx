@@ -82,7 +82,7 @@ function SalesTab() {
           <>
             <div className="overflow-x-auto">
               <table className="w-full text-left text-sm">
-                <thead className="bg-gradient-to-b from-[#1c2f4d] to-[#0d1b30] text-xs font-semibold text-[#dbe3ef] uppercase">
+                <thead className="bg-[#faf6ec] text-xs font-semibold text-[#5a6a85] uppercase">
                   <tr>
                     <th className="px-6 py-3">Date</th>
                     <th className="px-6 py-3">Agent</th>
@@ -101,8 +101,11 @@ function SalesTab() {
                       <td className="px-6 py-4 whitespace-nowrap text-[#5a6a85]">
                         {sale.agent_display_name}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-[#5a6a85]">
-                        {sale.vehicle_description}
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <p className="text-[#1c2f4d]">{sale.vehicle_description}</p>
+                        {sale.customer_name && (
+                          <p className="text-xs text-[#93a2bc]">{sale.customer_name}</p>
+                        )}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-[#5a6a85]">
                         {sale.sale_amount}
