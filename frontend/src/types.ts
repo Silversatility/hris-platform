@@ -172,6 +172,35 @@ export interface NotificationRecord {
   created_at: string
 }
 
+export interface TicketCommentRecord {
+  id: number
+  ticket: number
+  author: number
+  author_name: string
+  body: string
+  created_at: string
+}
+
+export interface TicketRecord {
+  id: number
+  ticket_number: string
+  requester: number
+  requester_name: string
+  category: string
+  subject: string
+  description: string
+  priority: string
+  status: string
+  assigned_to: number | null
+  assigned_to_name: string | null
+  sla_due_at: string
+  is_overdue: boolean
+  resolved_at: string | null
+  comments: TicketCommentRecord[]
+  created_at: string
+  updated_at: string
+}
+
 export interface PaginatedResponse<T> {
   count: number
   next: string | null

@@ -10,6 +10,7 @@ import {
   PeopleIcon,
   SearchIcon,
   SettingsIcon,
+  TicketIcon,
   WalletIcon,
 } from './icons'
 import NotificationBell from './NotificationBell'
@@ -55,6 +56,12 @@ const NAV_STRUCTURE: NavEntry[] = [
     label: 'Payroll',
     icon: WalletIcon,
     items: [{ to: '/payroll', label: 'Payroll' }],
+  },
+  {
+    type: 'group',
+    label: 'Support',
+    icon: TicketIcon,
+    items: [{ to: '/tickets', label: 'Tickets' }],
   },
   { type: 'link', to: '/settings', label: 'Settings', icon: SettingsIcon },
 ]

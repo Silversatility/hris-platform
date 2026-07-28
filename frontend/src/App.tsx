@@ -11,6 +11,7 @@ import Login from './pages/Login'
 import NotFound from './pages/NotFound'
 import Payroll from './pages/Payroll'
 import Profile from './pages/Profile'
+import Tickets from './pages/Tickets'
 
 function App() {
   return (
@@ -26,6 +27,7 @@ function App() {
               <Route path="/departments" element={<Departments />} />
               <Route path="/leave-requests" element={<LeaveRequests />} />
               <Route path="/payroll" element={<Payroll />} />
+              <Route path="/tickets" element={<Tickets />} />
               <Route path="/settings" element={<ComingSoon title="Settings" />} />
             </Route>
           </Route>
