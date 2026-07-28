@@ -14,7 +14,8 @@ interface FormValues {
   default_commission_rate: string
   status: string
   date_joined: string
-  bank_code: string
+  bank_name: string
+  bank_bic: string
   bank_account_number: string
   bank_account_holder_name: string
 }
@@ -28,7 +29,8 @@ const EMPTY_VALUES: FormValues = {
   default_commission_rate: '',
   status: 'active',
   date_joined: '',
-  bank_code: '',
+  bank_name: '',
+  bank_bic: '',
   bank_account_number: '',
   bank_account_holder_name: '',
 }
@@ -81,7 +83,8 @@ function SalesAgentFormModal({ isOpen, agent, onClose, onSaved }: SalesAgentForm
             default_commission_rate: agent.default_commission_rate,
             status: agent.status,
             date_joined: agent.date_joined,
-            bank_code: agent.bank_code,
+            bank_name: agent.bank_name,
+            bank_bic: agent.bank_bic,
             bank_account_number: agent.bank_account_number,
             bank_account_holder_name: agent.bank_account_holder_name,
           }
@@ -197,15 +200,24 @@ function SalesAgentFormModal({ isOpen, agent, onClose, onSaved }: SalesAgentForm
 
         <div className="border-t border-[#f0ece0] pt-4">
           <p className="mb-3 text-xs font-semibold uppercase text-[#5a6a85]">
-            Payout details (Xendit)
+            Payout details (PayMongo bank transfer)
           </p>
           <div className="grid grid-cols-2 gap-3">
-            <div className="col-span-2">
-              <label className={labelClass()}>Bank / E-wallet Code</label>
+            <div>
+              <label className={labelClass()}>Bank Name</label>
               <input
-                value={values.bank_code}
-                onChange={(e) => setField('bank_code', e.target.value)}
-                placeholder="e.g. PH_GCASH, PH_BDO"
+                value={values.bank_name}
+                onChange={(e) => setField('bank_name', e.target.value)}
+                placeholder="e.g. BDO Unibank"
+                className={inputClass()}
+              />
+            </div>
+            <div>
+              <label className={labelClass()}>Bank BIC</label>
+              <input
+                value={values.bank_bic}
+                onChange={(e) => setField('bank_bic', e.target.value)}
+                placeholder="e.g. BNORPHMM"
                 className={inputClass()}
               />
             </div>

@@ -32,7 +32,7 @@ interface MarkPaidTarget {
   label: string
 }
 
-function extractXenditErrorMessage(err: unknown): string {
+function extractPayMongoErrorMessage(err: unknown): string {
   if (axios.isAxiosError(err) && err.response?.data) {
     const data: unknown = err.response.data
     if (Array.isArray(data)) return data.join(' ')
@@ -42,7 +42,7 @@ function extractXenditErrorMessage(err: unknown): string {
         .join(' — ')
     }
   }
-  return 'Failed to pay out via Xendit.'
+  return 'Failed to pay out via PayMongo.'
 }
 
 function PaidBadge({ record }: { record: { is_paid: boolean; payment_method: string } }) {
@@ -65,8 +65,8 @@ function PayRunDetail({ payRun }: { payRun: PayRunRecord }) {
   const [payouts, setPayouts] = useState<CommissionPayoutRecord[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [markPaidTarget, setMarkPaidTarget] = useState<MarkPaidTarget | null>(null)
-  const [xenditBusyId, setXenditBusyId] = useState<number | null>(null)
-  const [xenditErrors, setXenditErrors] = useState<Record<number, string>>({})
+  const [paymongoBusyId, setPaymongoBusyId] = useState<number | null>(null)
+  const [paymongoErrors, setPaymongoErrors] = useState<Record<number, string>>({})
 
   const loadDetail = useCallback(() => {
     setIsLoading(true)
@@ -89,20 +89,20 @@ function PayRunDetail({ payRun }: { payRun: PayRunRecord }) {
 
   const canMarkPaid = payRun.status === 'completed'
 
-  async function handlePayViaXendit(payout: CommissionPayoutRecord) {
-    setXenditErrors((prev) => {
+  async function handlePayViaPaymongo(payout: CommissionPayoutRecord) {
+    setPaymongoErrors((prev) => {
       const next = { ...prev }
       delete next[payout.id]
       return next
     })
-    setXenditBusyId(payout.id)
+    setPaymongoBusyId(payout.id)
     try {
-      await apiClient.post(`/api/commission-payouts/${payout.id}/pay-via-xendit/`)
+      await apiClient.post(`/api/commission-payouts/${payout.id}/pay-via-paymongo/`)
       loadDetail()
     } catch (err) {
-      setXenditErrors((prev) => ({ ...prev, [payout.id]: extractXenditErrorMessage(err) }))
+      setPaymongoErrors((prev) => ({ ...prev, [payout.id]: extractPayMongoErrorMessage(err) }))
     } finally {
-      setXenditBusyId(null)
+      setPaymongoBusyId(null)
     }
   }
 
@@ -221,12 +221,12 @@ function PayRunDetail({ payRun }: { payRun: PayRunRecord }) {
                               Mark Paid
                             </button>
                             <button
-                              onClick={() => handlePayViaXendit(payout)}
-                              disabled={xenditBusyId === payout.id}
+                              onClick={() => handlePayViaPaymongo(payout)}
+                              disabled={paymongoBusyId === payout.id}
                               className="inline-flex items-center gap-1 rounded-full bg-[#1c2f4d] px-3 py-1 text-xs font-semibold text-[#f4efe2] hover:bg-[#0d1b30] disabled:opacity-50"
                             >
-                              {xenditBusyId === payout.id && <Spinner className="h-3 w-3" />}
-                              Pay via Xendit
+                              {paymongoBusyId === payout.id && <Spinner className="h-3 w-3" />}
+                              Pay via PayMongo
                             </button>
                           </div>
                         ) : (
@@ -234,11 +234,11 @@ function PayRunDetail({ payRun }: { payRun: PayRunRecord }) {
                         )}
                       </td>
                     </tr>
-                    {xenditErrors[payout.id] && (
+                    {paymongoErrors[payout.id] && (
                       <tr>
                         <td colSpan={4} className="px-4 pb-2">
                           <p className="rounded-lg bg-rose-50 px-3 py-2 text-xs text-rose-600">
-                            {xenditErrors[payout.id]}
+                            {paymongoErrors[payout.id]}
                           </p>
                         </td>
                       </tr>

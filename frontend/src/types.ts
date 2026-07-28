@@ -84,7 +84,8 @@ export interface SalesAgentRecord {
   default_commission_rate: string
   status: string
   date_joined: string
-  bank_code: string
+  bank_name: string
+  bank_bic: string
   bank_account_number: string
   bank_account_holder_name: string
 }
