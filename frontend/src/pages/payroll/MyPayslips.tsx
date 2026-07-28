@@ -78,12 +78,21 @@ function MyPayslips() {
               </span>
             </button>
             <div className="flex items-center gap-3">
-              <Link
-                to={`/payslips/${payslip.id}/print`}
-                className="rounded-full px-3 py-1 text-xs font-semibold text-[#1c2f4d] ring-1 ring-[#e7ded0] hover:bg-[#f4efe2]"
-              >
-                Print
-              </Link>
+              {payslip.is_paid ? (
+                <Link
+                  to={`/payslips/${payslip.id}/print`}
+                  className="rounded-full px-3 py-1 text-xs font-semibold text-[#1c2f4d] ring-1 ring-[#e7ded0] hover:bg-[#f4efe2]"
+                >
+                  Print
+                </Link>
+              ) : (
+                <span
+                  title="Available once this payslip is paid"
+                  className="rounded-full px-3 py-1 text-xs font-semibold text-[#93a2bc] ring-1 ring-[#f0ece0]"
+                >
+                  Print
+                </span>
+              )}
               <button
                 onClick={() => setExpandedId(expandedId === payslip.id ? null : payslip.id)}
                 className="text-xs text-[#5a6a85]"

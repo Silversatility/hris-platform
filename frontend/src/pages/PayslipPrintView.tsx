@@ -46,6 +46,20 @@ function PayslipPrintView() {
     )
   }
 
+  if (!payslip.is_paid) {
+    return (
+      <div className="flex min-h-screen flex-col items-center justify-center gap-3 bg-[#f4efe2] px-4 text-center">
+        <p className="text-sm text-[#5a6a85]">
+          This payslip isn't available to print yet — it can be printed once the salary for this
+          pay cycle has been paid.
+        </p>
+        <Link to="/" className="text-sm font-semibold text-[#1c2f4d] hover:underline">
+          Back to Dashboard
+        </Link>
+      </div>
+    )
+  }
+
   const earnings = payslip.line_items.filter((item) => item.item_type === 'earning')
   const deductions = payslip.line_items.filter((item) => item.item_type === 'deduction')
 
