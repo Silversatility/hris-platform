@@ -7,10 +7,11 @@ from rest_framework.response import Response
 
 from apps.employees.models import Employee
 
-from . import xendit_client
+from . import paymongo_client
 from .models import (
     CommissionLineItem,
     CommissionPayout,
+    PaymentMethod,
     PayRun,
     Payslip,
     PayslipLineItem,
@@ -129,15 +130,6 @@ class CommissionLineItemViewSet(viewsets.ModelViewSet):
         instance.delete()
 
 
-def _payment_method_for_bank_code(bank_code):
-    code = bank_code.upper()
-    if "GCASH" in code:
-        return "gcash"
-    if "MAYA" in code:
-        return "maya"
-    return "bank_transfer"
-
-
 class CommissionPayoutViewSet(viewsets.ModelViewSet):
     queryset = CommissionPayout.objects.select_related("agent", "pay_run").prefetch_related(
         "line_items"
@@ -152,8 +144,8 @@ class CommissionPayoutViewSet(viewsets.ModelViewSet):
         _mark_paid(request, payout)
         return Response(self.get_serializer(payout).data)
 
-    @action(detail=True, methods=["post"], url_path="pay-via-xendit")
-    def pay_via_xendit(self, request, pk=None):
+    @action(detail=True, methods=["post"], url_path="pay-via-paymongo")
+    def pay_via_paymongo(self, request, pk=None):
         payout = self.get_object()
         if payout.pay_run.status != PayRun.Status.COMPLETED:
             raise ValidationError("Can only pay out once the pay run is completed.")
@@ -161,27 +153,36 @@ class CommissionPayoutViewSet(viewsets.ModelViewSet):
             raise ValidationError("Already marked as paid.")
 
         agent = payout.agent
-        if not agent.bank_code or not agent.bank_account_number:
+        if not all(
+            [
+                agent.bank_account_number,
+                agent.bank_account_holder_name,
+                agent.bank_bic,
+                agent.bank_name,
+            ]
+        ):
             raise ValidationError(
-                "This agent has no bank/e-wallet details on file. Add them before paying out."
+                "This agent's bank details are incomplete. Add bank name, BIC, account "
+                "number, and account holder name before paying out."
             )
 
         try:
-            result = xendit_client.create_disbursement(
-                reference_id=f"commission-payout-{payout.id}",
-                channel_code=agent.bank_code,
-                account_name=agent.bank_account_holder_name or agent.full_name,
-                account_number=agent.bank_account_number,
-                amount=int(payout.total_commission),
+            result = paymongo_client.create_transfer(
+                reference_number=f"commission-payout-{payout.id}",
+                destination_number=agent.bank_account_number,
+                destination_name=agent.bank_account_holder_name,
+                destination_bic=agent.bank_bic,
+                destination_bank_name=agent.bank_name,
+                amount=int(payout.total_commission * 100),
                 description=f"Commission payout for {agent.agent_id}",
             )
-        except xendit_client.XenditError as exc:
-            raise ValidationError(f"Xendit disbursement failed: {exc}") from exc
+        except paymongo_client.PayMongoError as exc:
+            raise ValidationError(f"PayMongo transfer failed: {exc}") from exc
 
         payout.is_paid = True
         payout.paid_at = timezone.now()
-        payout.payment_method = _payment_method_for_bank_code(agent.bank_code)
-        payout.payment_reference = result.get("id") or result.get("reference_id", "")
+        payout.payment_method = PaymentMethod.BANK_TRANSFER
+        payout.payment_reference = paymongo_client.extract_transfer_reference(result)
         payout.save(update_fields=["is_paid", "paid_at", "payment_method", "payment_reference"])
 
         return Response(self.get_serializer(payout).data)

@@ -38,7 +38,8 @@ class SalesAgentSerializer(serializers.ModelSerializer):
             "default_commission_rate",
             "status",
             "date_joined",
-            "bank_code",
+            "bank_name",
+            "bank_bic",
             "bank_account_number",
             "bank_account_holder_name",
         ]

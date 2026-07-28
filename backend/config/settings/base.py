@@ -149,5 +149,10 @@ CELERY_RESULT_SERIALIZER = "json"
 CELERY_TIMEZONE = TIME_ZONE
 CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"
 
-# --- Xendit (agent commission disbursements) ---
-XENDIT_SECRET_KEY = env("XENDIT_SECRET_KEY", default="")
+# --- PayMongo (agent commission bank transfers) ---
+PAYMONGO_SECRET_KEY = env("PAYMONGO_SECRET_KEY", default="")
+# The dealership's own settlement bank account, registered with PayMongo.
+PAYMONGO_SOURCE_ACCOUNT_NUMBER = env("PAYMONGO_SOURCE_ACCOUNT_NUMBER", default="")
+PAYMONGO_SOURCE_ACCOUNT_NAME = env("PAYMONGO_SOURCE_ACCOUNT_NAME", default="")
+PAYMONGO_SOURCE_ACCOUNT_BIC = env("PAYMONGO_SOURCE_ACCOUNT_BIC", default="")
+PAYMONGO_SOURCE_ACCOUNT_BANK_NAME = env("PAYMONGO_SOURCE_ACCOUNT_BANK_NAME", default="")
