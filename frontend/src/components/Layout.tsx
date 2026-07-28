@@ -1,9 +1,10 @@
-import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom'
+import { useEffect, useState, type ComponentType } from 'react'
+import { Link, NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import FullScreenLoader from './FullScreenLoader'
 import {
-  BuildingIcon,
   CalendarIcon,
+  ChevronDownIcon,
   DashboardIcon,
   LogoutIcon,
   PeopleIcon,
@@ -13,13 +14,49 @@ import {
 } from './icons'
 import NotificationBell from './NotificationBell'
 
-const NAV_ITEMS = [
-  { to: '/', label: 'Dashboard', icon: DashboardIcon, end: true },
-  { to: '/employees', label: 'Employees', icon: PeopleIcon },
-  { to: '/departments', label: 'Departments', icon: BuildingIcon },
-  { to: '/leave-requests', label: 'Leave Requests', icon: CalendarIcon },
-  { to: '/payroll', label: 'Payroll', icon: WalletIcon },
-  { to: '/settings', label: 'Settings', icon: SettingsIcon },
+type IconComponent = ComponentType<{ className?: string }>
+
+interface NavLinkEntry {
+  type: 'link'
+  to: string
+  label: string
+  icon: IconComponent
+  end?: boolean
+}
+
+interface NavGroupEntry {
+  type: 'group'
+  label: string
+  icon: IconComponent
+  items: { to: string; label: string }[]
+}
+
+type NavEntry = NavLinkEntry | NavGroupEntry
+
+const NAV_STRUCTURE: NavEntry[] = [
+  { type: 'link', to: '/', label: 'Dashboard', icon: DashboardIcon, end: true },
+  {
+    type: 'group',
+    label: 'Workforce',
+    icon: PeopleIcon,
+    items: [
+      { to: '/employees', label: 'Employees' },
+      { to: '/departments', label: 'Departments' },
+    ],
+  },
+  {
+    type: 'group',
+    label: 'Time Off',
+    icon: CalendarIcon,
+    items: [{ to: '/leave-requests', label: 'Leave Requests' }],
+  },
+  {
+    type: 'group',
+    label: 'Payroll',
+    icon: WalletIcon,
+    items: [{ to: '/payroll', label: 'Payroll' }],
+  },
+  { type: 'link', to: '/settings', label: 'Settings', icon: SettingsIcon },
 ]
 
 function initials(firstName: string, lastName: string, email: string) {
@@ -29,9 +66,27 @@ function initials(firstName: string, lastName: string, email: string) {
   return email[0]?.toUpperCase() ?? '?'
 }
 
+function findActiveGroupLabel(pathname: string) {
+  for (const entry of NAV_STRUCTURE) {
+    if (entry.type === 'group' && entry.items.some((item) => pathname === item.to)) {
+      return entry.label
+    }
+  }
+  return null
+}
+
 function Layout() {
   const { user, logout, isLoggingOut } = useAuth()
   const navigate = useNavigate()
+  const location = useLocation()
+  const [openGroup, setOpenGroup] = useState<string | null>(() =>
+    findActiveGroupLabel(location.pathname)
+  )
+
+  useEffect(() => {
+    const activeGroup = findActiveGroupLabel(location.pathname)
+    if (activeGroup) setOpenGroup(activeGroup)
+  }, [location.pathname])
 
   async function handleLogout() {
     await logout()
@@ -62,23 +117,74 @@ function Layout() {
         </div>
 
         <nav className="flex-1 space-y-1 px-4 py-6">
-          {NAV_ITEMS.map(({ to, label, icon: Icon, end }) => (
-            <NavLink
-              key={to}
-              to={to}
-              end={end}
-              className={({ isActive }) =>
-                `flex items-center gap-3 rounded-full px-4 py-2.5 text-sm font-medium transition-colors ${
-                  isActive
-                    ? 'bg-white/15 text-white'
-                    : 'text-[#b7c2d6] hover:bg-white/5 hover:text-white'
-                }`
-              }
-            >
-              <Icon className="h-4.5 w-4.5" />
-              {label}
-            </NavLink>
-          ))}
+          {NAV_STRUCTURE.map((entry) => {
+            if (entry.type === 'link') {
+              const { to, label, icon: Icon, end } = entry
+              return (
+                <NavLink
+                  key={to}
+                  to={to}
+                  end={end}
+                  className={({ isActive }) =>
+                    `flex items-center gap-3 rounded-full px-4 py-2.5 text-sm font-medium transition-colors ${
+                      isActive
+                        ? 'bg-white/15 text-white'
+                        : 'text-[#b7c2d6] hover:bg-white/5 hover:text-white'
+                    }`
+                  }
+                >
+                  <Icon className="h-4.5 w-4.5" />
+                  {label}
+                </NavLink>
+              )
+            }
+
+            const { label, icon: Icon, items } = entry
+            const isOpen = openGroup === label
+            const isGroupActive = items.some((item) => location.pathname === item.to)
+
+            return (
+              <div key={label}>
+                <button
+                  onClick={() => setOpenGroup(isOpen ? null : label)}
+                  className={`flex w-full items-center gap-3 rounded-full px-4 py-2.5 text-sm font-medium transition-colors ${
+                    isGroupActive
+                      ? 'bg-white/15 text-white'
+                      : 'text-[#b7c2d6] hover:bg-white/5 hover:text-white'
+                  }`}
+                >
+                  <Icon className="h-4.5 w-4.5" />
+                  <span className="flex-1 text-left">{label}</span>
+                  <ChevronDownIcon
+                    className={`h-4 w-4 transition-transform ${isOpen ? 'rotate-180' : ''}`}
+                  />
+                </button>
+                <div
+                  className={`overflow-hidden transition-[max-height] duration-300 ease-in-out ${
+                    isOpen ? 'max-h-40' : 'max-h-0'
+                  }`}
+                >
+                  <div className="mt-1 space-y-1 pl-8">
+                    {items.map((item) => (
+                      <NavLink
+                        key={item.to}
+                        to={item.to}
+                        className={({ isActive }) =>
+                          `block rounded-full px-4 py-2 text-sm font-medium transition-colors ${
+                            isActive
+                              ? 'bg-white/15 text-white'
+                              : 'text-[#b7c2d6] hover:bg-white/5 hover:text-white'
+                          }`
+                        }
+                      >
+                        {item.label}
+                      </NavLink>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )
+          })}
         </nav>
 
         <div className="border-t border-white/10 px-4 py-4">
