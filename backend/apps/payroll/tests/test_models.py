@@ -16,9 +16,10 @@ pytestmark = pytest.mark.django_db
 
 
 @pytest.fixture
-def agent():
+def agent(branch):
     return SalesAgent.objects.create(
         agent_id="AGT-0001",
+        branch=branch,
         first_name="Carlo",
         last_name="Reyes",
         default_commission_rate=Decimal("5.00"),
@@ -45,7 +46,7 @@ def pay_run():
     )
 
 
-def test_payslip_gross_deductions_net(pay_run, django_user_model):
+def test_payslip_gross_deductions_net(pay_run, branch, django_user_model):
     from apps.employees.models import Department, Employee
 
     department = Department.objects.create(name="Sales Support", code="SS")
@@ -54,6 +55,7 @@ def test_payslip_gross_deductions_net(pay_run, django_user_model):
         user=user,
         employee_id="EMP-0001",
         department=department,
+        branch=branch,
         job_title="Support",
         employment_type=Employee.EmploymentType.FULL_TIME,
         hire_date="2026-01-01",

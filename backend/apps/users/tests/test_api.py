@@ -33,13 +33,14 @@ def test_me_returns_user_without_employee():
     assert data["employee"] is None
 
 
-def test_me_returns_employee_summary_when_linked():
+def test_me_returns_employee_summary_when_linked(branch):
     department = Department.objects.create(name="Engineering", code="ENG")
     user = User.objects.create_user(email="jane@example.com", password="s3cret-pass")
     Employee.objects.create(
         user=user,
         employee_id="EMP-0001",
         department=department,
+        branch=branch,
         job_title="Software Engineer",
         employment_type=Employee.EmploymentType.FULL_TIME,
         hire_date="2026-01-15",
@@ -80,13 +81,14 @@ def test_logout_requires_refresh_token():
     assert response.status_code == 400
 
 
-def test_can_update_own_name_and_contact_info():
+def test_can_update_own_name_and_contact_info(branch):
     department = Department.objects.create(name="Engineering", code="ENG")
     user = User.objects.create_user(email="jane@example.com", password="s3cret-pass")
     Employee.objects.create(
         user=user,
         employee_id="EMP-0001",
         department=department,
+        branch=branch,
         job_title="Software Engineer",
         employment_type=Employee.EmploymentType.FULL_TIME,
         hire_date="2026-01-15",
@@ -114,13 +116,14 @@ def test_can_update_own_name_and_contact_info():
     assert user.employee.personal_email == "jane.personal@example.com"
 
 
-def test_can_update_own_bank_details():
+def test_can_update_own_bank_details(branch):
     department = Department.objects.create(name="Engineering", code="ENG")
     user = User.objects.create_user(email="jane@example.com", password="s3cret-pass")
     Employee.objects.create(
         user=user,
         employee_id="EMP-0001",
         department=department,
+        branch=branch,
         job_title="Software Engineer",
         employment_type=Employee.EmploymentType.FULL_TIME,
         hire_date="2026-01-15",
@@ -144,13 +147,14 @@ def test_can_update_own_bank_details():
     assert user.employee.bank_account_holder_name == "Jane Doe"
 
 
-def test_self_update_cannot_change_employment_fields():
+def test_self_update_cannot_change_employment_fields(branch):
     department = Department.objects.create(name="Engineering", code="ENG")
     user = User.objects.create_user(email="jane@example.com", password="s3cret-pass")
     employee = Employee.objects.create(
         user=user,
         employee_id="EMP-0001",
         department=department,
+        branch=branch,
         job_title="Software Engineer",
         employment_type=Employee.EmploymentType.FULL_TIME,
         hire_date="2026-01-15",

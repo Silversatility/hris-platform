@@ -23,12 +23,13 @@ def department():
 
 
 @pytest.fixture
-def employee(department):
+def employee(department, branch):
     user = User.objects.create_user(email="jane@example.com", password="s3cret-pass")
     return Employee.objects.create(
         user=user,
         employee_id="EMP-0001",
         department=department,
+        branch=branch,
         job_title="Software Engineer",
         employment_type=Employee.EmploymentType.FULL_TIME,
         hire_date="2026-01-15",
@@ -37,12 +38,13 @@ def employee(department):
 
 
 @pytest.fixture
-def other_employee(department):
+def other_employee(department, branch):
     user = User.objects.create_user(email="bob@example.com", password="s3cret-pass")
     return Employee.objects.create(
         user=user,
         employee_id="EMP-0002",
         department=department,
+        branch=branch,
         job_title="Designer",
         employment_type=Employee.EmploymentType.FULL_TIME,
         hire_date="2026-01-15",
@@ -51,9 +53,10 @@ def other_employee(department):
 
 
 @pytest.fixture
-def agent():
+def agent(branch):
     return SalesAgent.objects.create(
         agent_id="AGT-0001",
+        branch=branch,
         first_name="Carlo",
         last_name="Reyes",
         default_commission_rate=Decimal("5.00"),
@@ -77,7 +80,7 @@ def test_non_staff_cannot_list_sales_agents(employee):
     assert response.status_code == 403
 
 
-def test_staff_can_create_sales_agent(staff_user):
+def test_staff_can_create_sales_agent(staff_user, branch):
     client = APIClient()
     client.force_authenticate(staff_user)
 
@@ -85,6 +88,7 @@ def test_staff_can_create_sales_agent(staff_user):
         reverse("sales-agent-list"),
         {
             "agent_id": "AGT-0001",
+            "branch": branch.id,
             "first_name": "Carlo",
             "last_name": "Reyes",
             "default_commission_rate": "5.00",
@@ -95,13 +99,14 @@ def test_staff_can_create_sales_agent(staff_user):
     assert response.status_code == 201
 
 
-def test_agent_id_auto_generated_when_blank(staff_user):
+def test_agent_id_auto_generated_when_blank(staff_user, branch):
     client = APIClient()
     client.force_authenticate(staff_user)
 
     response = client.post(
         reverse("sales-agent-list"),
         {
+            "branch": branch.id,
             "first_name": "Nina",
             "last_name": "Lopez",
             "default_commission_rate": "5.00",

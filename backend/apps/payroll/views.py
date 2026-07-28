@@ -51,10 +51,10 @@ def _mark_paid(request, instance):
 
 
 class SalesAgentViewSet(viewsets.ModelViewSet):
-    queryset = SalesAgent.objects.all()
+    queryset = SalesAgent.objects.select_related("branch")
     serializer_class = SalesAgentSerializer
     permission_classes = [permissions.IsAuthenticated, permissions.IsAdminUser]
-    filterset_fields = ["status"]
+    filterset_fields = ["status", "branch"]
 
 
 class SaleViewSet(viewsets.ModelViewSet):

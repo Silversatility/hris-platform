@@ -24,12 +24,15 @@ def generate_agent_id():
 class SalesAgentSerializer(serializers.ModelSerializer):
     full_name = serializers.CharField(read_only=True)
     agent_id = serializers.CharField(required=False)
+    branch_name = serializers.CharField(source="branch.name", read_only=True)
 
     class Meta:
         model = SalesAgent
         fields = [
             "id",
             "agent_id",
+            "branch",
+            "branch_name",
             "first_name",
             "last_name",
             "full_name",

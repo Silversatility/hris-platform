@@ -24,12 +24,13 @@ def leave_type():
 
 
 @pytest.fixture
-def manager(department):
+def manager(department, branch):
     user = User.objects.create_user(email="manager@example.com", password="s3cret-pass")
     return Employee.objects.create(
         user=user,
         employee_id="EMP-0001",
         department=department,
+        branch=branch,
         job_title="Engineering Manager",
         employment_type=Employee.EmploymentType.FULL_TIME,
         hire_date="2020-01-01",
@@ -37,12 +38,13 @@ def manager(department):
 
 
 @pytest.fixture
-def employee(department, manager):
+def employee(department, branch, manager):
     user = User.objects.create_user(email="jane@example.com", password="s3cret-pass")
     return Employee.objects.create(
         user=user,
         employee_id="EMP-0002",
         department=department,
+        branch=branch,
         manager=manager,
         job_title="Software Engineer",
         employment_type=Employee.EmploymentType.FULL_TIME,
@@ -121,7 +123,9 @@ def test_approve_fails_when_balance_insufficient(employee, manager, leave_type):
     assert leave_request.status == LeaveRequest.Status.PENDING
 
 
-def test_staff_cannot_approve_own_leave_request(department, leave_type, balance, employee):
+def test_staff_cannot_approve_own_leave_request(
+    department, branch, leave_type, balance, employee
+):
     staff_user = User.objects.create_user(
         email="hr-staff@example.com", password="s3cret-pass", is_staff=True
     )
@@ -129,6 +133,7 @@ def test_staff_cannot_approve_own_leave_request(department, leave_type, balance,
         user=staff_user,
         employee_id="EMP-0010",
         department=department,
+        branch=branch,
         job_title="HR Manager",
         employment_type=Employee.EmploymentType.FULL_TIME,
         hire_date="2020-01-01",
@@ -170,12 +175,13 @@ def test_manager_cannot_approve_own_leave_request(manager, leave_type):
     assert response.status_code == 403
 
 
-def test_unrelated_employee_cannot_approve(department, employee, leave_type, balance):
+def test_unrelated_employee_cannot_approve(department, branch, employee, leave_type, balance):
     outsider_user = User.objects.create_user(email="outsider@example.com", password="s3cret-pass")
     Employee.objects.create(
         user=outsider_user,
         employee_id="EMP-0099",
         department=department,
+        branch=branch,
         job_title="Designer",
         employment_type=Employee.EmploymentType.FULL_TIME,
         hire_date="2026-01-15",
@@ -247,12 +253,13 @@ def test_approve_sets_reviewed_by_name(employee, manager, leave_type, balance):
 
 
 @pytest.fixture
-def vp(department):
+def vp(department, branch):
     user = User.objects.create_user(email="vp@example.com", password="s3cret-pass")
     return Employee.objects.create(
         user=user,
         employee_id="EMP-0000",
         department=department,
+        branch=branch,
         job_title="VP of Engineering",
         employment_type=Employee.EmploymentType.FULL_TIME,
         hire_date="2018-01-01",

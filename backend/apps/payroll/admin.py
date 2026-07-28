@@ -13,8 +13,15 @@ from .models import (
 
 @admin.register(SalesAgent)
 class SalesAgentAdmin(admin.ModelAdmin):
-    list_display = ["agent_id", "first_name", "last_name", "default_commission_rate", "status"]
-    list_filter = ["status"]
+    list_display = [
+        "agent_id",
+        "first_name",
+        "last_name",
+        "branch",
+        "default_commission_rate",
+        "status",
+    ]
+    list_filter = ["status", "branch"]
     search_fields = ["agent_id", "first_name", "last_name", "email"]
 
 

@@ -11,13 +11,14 @@ pytestmark = pytest.mark.django_db
 
 
 @pytest.fixture
-def employee():
+def employee(branch):
     department = Department.objects.create(name="Engineering", code="ENG")
     user = User.objects.create_user(email="jane@example.com", password="s3cret-pass")
     return Employee.objects.create(
         user=user,
         employee_id="EMP-0001",
         department=department,
+        branch=branch,
         job_title="Software Engineer",
         employment_type=Employee.EmploymentType.FULL_TIME,
         hire_date="2026-01-15",

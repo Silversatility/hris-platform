@@ -21,12 +21,13 @@ def staff_user():
 
 
 @pytest.fixture
-def employee(department):
+def employee(department, branch):
     user = User.objects.create_user(email="jane@example.com", password="s3cret-pass")
     return Employee.objects.create(
         user=user,
         employee_id="EMP-0001",
         department=department,
+        branch=branch,
         job_title="Software Engineer",
         employment_type=Employee.EmploymentType.FULL_TIME,
         hire_date="2026-01-15",
@@ -34,12 +35,13 @@ def employee(department):
 
 
 @pytest.fixture
-def other_employee(department):
+def other_employee(department, branch):
     user = User.objects.create_user(email="bob@example.com", password="s3cret-pass")
     return Employee.objects.create(
         user=user,
         employee_id="EMP-0002",
         department=department,
+        branch=branch,
         job_title="Designer",
         employment_type=Employee.EmploymentType.FULL_TIME,
         hire_date="2026-01-15",

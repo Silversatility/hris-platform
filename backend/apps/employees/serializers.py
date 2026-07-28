@@ -3,7 +3,7 @@ from rest_framework import serializers
 
 from apps.users.models import User
 
-from .models import Department, Employee
+from .models import Branch, Department, Employee
 
 
 class DepartmentSerializer(serializers.ModelSerializer):
@@ -14,10 +14,19 @@ class DepartmentSerializer(serializers.ModelSerializer):
         fields = ["id", "name", "code", "is_active", "employee_count"]
 
 
+class BranchSerializer(serializers.ModelSerializer):
+    employee_count = serializers.IntegerField(read_only=True, default=0)
+
+    class Meta:
+        model = Branch
+        fields = ["id", "name", "code", "address", "is_active", "employee_count"]
+
+
 class EmployeeSerializer(serializers.ModelSerializer):
     user_email = serializers.EmailField(source="user.email", read_only=True)
     full_name = serializers.SerializerMethodField()
     department_name = serializers.CharField(source="department.name", read_only=True)
+    branch_name = serializers.CharField(source="branch.name", read_only=True)
     manager_name = serializers.SerializerMethodField()
 
     class Meta:
@@ -30,6 +39,8 @@ class EmployeeSerializer(serializers.ModelSerializer):
             "employee_id",
             "department",
             "department_name",
+            "branch",
+            "branch_name",
             "manager",
             "manager_name",
             "job_title",
@@ -88,6 +99,7 @@ class EmployeeWriteSerializer(serializers.ModelSerializer):
             "password",
             "employee_id",
             "department",
+            "branch",
             "manager",
             "job_title",
             "employment_type",

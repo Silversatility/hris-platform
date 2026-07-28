@@ -17,11 +17,12 @@ def user():
     return User.objects.create_user(email="jane@example.com", password="s3cret-pass")
 
 
-def test_create_employee(department, user):
+def test_create_employee(department, branch, user):
     employee = Employee.objects.create(
         user=user,
         employee_id="EMP-0001",
         department=department,
+        branch=branch,
         job_title="Software Engineer",
         employment_type=Employee.EmploymentType.FULL_TIME,
         hire_date="2026-01-15",
@@ -31,12 +32,13 @@ def test_create_employee(department, user):
     assert str(employee) == "EMP-0001 - jane@example.com"
 
 
-def test_employee_manager_self_reference(department, user):
+def test_employee_manager_self_reference(department, branch, user):
     manager_user = User.objects.create_user(email="manager@example.com", password="s3cret-pass")
     manager = Employee.objects.create(
         user=manager_user,
         employee_id="EMP-0001",
         department=department,
+        branch=branch,
         job_title="Engineering Manager",
         employment_type=Employee.EmploymentType.FULL_TIME,
         hire_date="2020-01-01",
@@ -45,6 +47,7 @@ def test_employee_manager_self_reference(department, user):
         user=user,
         employee_id="EMP-0002",
         department=department,
+        branch=branch,
         manager=manager,
         job_title="Software Engineer",
         employment_type=Employee.EmploymentType.FULL_TIME,
@@ -55,11 +58,12 @@ def test_employee_manager_self_reference(department, user):
     assert manager.direct_reports.get() == report
 
 
-def test_employee_id_is_unique(department, user):
+def test_employee_id_is_unique(department, branch, user):
     Employee.objects.create(
         user=user,
         employee_id="EMP-0001",
         department=department,
+        branch=branch,
         job_title="Software Engineer",
         employment_type=Employee.EmploymentType.FULL_TIME,
         hire_date="2026-01-15",
@@ -71,6 +75,7 @@ def test_employee_id_is_unique(department, user):
             user=other_user,
             employee_id="EMP-0001",
             department=department,
+            branch=branch,
             job_title="Designer",
             employment_type=Employee.EmploymentType.FULL_TIME,
             hire_date="2026-01-15",

@@ -3,7 +3,7 @@ from decimal import Decimal
 from django.core.exceptions import ValidationError
 from django.db import models
 
-from apps.employees.models import Employee
+from apps.employees.models import Branch, Employee
 
 
 class SalesAgent(models.Model):
@@ -18,6 +18,7 @@ class SalesAgent(models.Model):
         INACTIVE = "inactive", "Inactive"
 
     agent_id = models.CharField(max_length=20, unique=True)
+    branch = models.ForeignKey(Branch, on_delete=models.PROTECT, related_name="agents")
     first_name = models.CharField(max_length=150)
     last_name = models.CharField(max_length=150)
     email = models.EmailField(blank=True)
