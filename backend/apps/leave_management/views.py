@@ -71,9 +71,11 @@ class LeaveRequestViewSet(viewsets.ModelViewSet):
             )
 
     def _authorize_review(self, request, leave_request):
+        reviewer = getattr(request.user, "employee", None)
+        if reviewer is not None and reviewer.id == leave_request.employee_id:
+            raise PermissionDenied("You cannot approve or reject your own leave request.")
         if request.user.is_staff:
             return
-        reviewer = getattr(request.user, "employee", None)
         if reviewer is None or leave_request.employee_id not in reviewer.get_all_report_ids():
             raise PermissionDenied(
                 "Only someone above this employee in the chain of command or HR staff "

@@ -121,6 +121,55 @@ def test_approve_fails_when_balance_insufficient(employee, manager, leave_type):
     assert leave_request.status == LeaveRequest.Status.PENDING
 
 
+def test_staff_cannot_approve_own_leave_request(department, leave_type, balance, employee):
+    staff_user = User.objects.create_user(
+        email="hr-staff@example.com", password="s3cret-pass", is_staff=True
+    )
+    staff_employee = Employee.objects.create(
+        user=staff_user,
+        employee_id="EMP-0010",
+        department=department,
+        job_title="HR Manager",
+        employment_type=Employee.EmploymentType.FULL_TIME,
+        hire_date="2020-01-01",
+    )
+    LeaveBalance.objects.create(
+        employee=staff_employee, leave_type=leave_type, year=2026, allocated_days=Decimal("15")
+    )
+    leave_request = LeaveRequest.objects.create(
+        employee=staff_employee,
+        leave_type=leave_type,
+        start_date=date(2026, 8, 3),
+        end_date=date(2026, 8, 7),
+    )
+    client = APIClient()
+    client.force_authenticate(staff_user)
+
+    response = client.post(reverse("leave-request-approve", args=[leave_request.id]))
+
+    assert response.status_code == 403
+    leave_request.refresh_from_db()
+    assert leave_request.status == LeaveRequest.Status.PENDING
+
+
+def test_manager_cannot_approve_own_leave_request(manager, leave_type):
+    LeaveBalance.objects.create(
+        employee=manager, leave_type=leave_type, year=2026, allocated_days=Decimal("15")
+    )
+    leave_request = LeaveRequest.objects.create(
+        employee=manager,
+        leave_type=leave_type,
+        start_date=date(2026, 8, 3),
+        end_date=date(2026, 8, 7),
+    )
+    client = APIClient()
+    client.force_authenticate(manager.user)
+
+    response = client.post(reverse("leave-request-approve", args=[leave_request.id]))
+
+    assert response.status_code == 403
+
+
 def test_unrelated_employee_cannot_approve(department, employee, leave_type, balance):
     outsider_user = User.objects.create_user(email="outsider@example.com", password="s3cret-pass")
     Employee.objects.create(
