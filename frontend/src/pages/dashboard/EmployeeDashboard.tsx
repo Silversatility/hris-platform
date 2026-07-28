@@ -1,6 +1,11 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
+import type { CalendarHighlight } from '../../components/MiniCalendar'
+import MiniCalendar from '../../components/MiniCalendar'
+import DonutChart, { type DonutSlice } from '../../components/DonutChart'
+import { CalendarIcon, PeopleIcon, WalletIcon } from '../../components/icons'
 import Spinner from '../../components/Spinner'
+import StatCard from '../../components/StatCard'
 import { useAuth } from '../../context/AuthContext'
 import { apiClient } from '../../lib/apiClient'
 import type {
@@ -23,12 +28,15 @@ function EmployeeDashboard() {
   const [balances, setBalances] = useState<LeaveBalanceRecord[]>([])
   const [pendingRequests, setPendingRequests] = useState<LeaveRequestRecord[]>([])
   const [payslips, setPayslips] = useState<PayslipRecord[]>([])
+  const [totalPayslips, setTotalPayslips] = useState(0)
   const [notifications, setNotifications] = useState<NotificationRecord[]>([])
+  const [calendarHighlights, setCalendarHighlights] = useState<CalendarHighlight[]>([])
   const [isLoading, setIsLoading] = useState(employeeId !== undefined)
 
   useEffect(() => {
     if (!employeeId) return
-    const year = new Date().getFullYear()
+    const now = new Date()
+    const year = now.getFullYear()
     Promise.all([
       apiClient.get<PaginatedResponse<LeaveBalanceRecord>>(
         `/api/leave-balances/?employee=${employeeId}&year=${year}`
@@ -36,25 +44,64 @@ function EmployeeDashboard() {
       apiClient.get<PaginatedResponse<LeaveRequestRecord>>(
         `/api/leave-requests/?employee=${employeeId}&status=pending`
       ),
+      apiClient.get<PaginatedResponse<LeaveRequestRecord>>(
+        `/api/leave-requests/?employee=${employeeId}&status=approved&page_size=50`
+      ),
       apiClient.get<PaginatedResponse<PayslipRecord>>(
         `/api/payslips/?employee=${employeeId}&page_size=3`
       ),
       apiClient.get<PaginatedResponse<NotificationRecord>>('/api/notifications/?page_size=5'),
-    ])
-      .then(([balancesRes, leaveRes, payslipsRes, notificationsRes]) => {
-        setBalances(balancesRes.data.results)
-        setPendingRequests(leaveRes.data.results)
-        setPayslips(payslipsRes.data.results)
-        setNotifications(notificationsRes.data.results)
-      })
-      .finally(() => setIsLoading(false))
+    ]).then(([balancesRes, pendingRes, approvedRes, payslipsRes, notificationsRes]) => {
+      setBalances(balancesRes.data.results)
+      setPendingRequests(pendingRes.data.results)
+      setPayslips(payslipsRes.data.results)
+      setTotalPayslips(payslipsRes.data.count)
+      setNotifications(notificationsRes.data.results)
+
+      const highlights: CalendarHighlight[] = approvedRes.data.results
+        .filter((request) => {
+          const date = new Date(request.start_date)
+          return date.getFullYear() === year && date.getMonth() === now.getMonth()
+        })
+        .map((request) => ({
+          date: request.start_date,
+          color: '#10b981',
+          label: `${request.leave_type_name} leave`,
+        }))
+      setCalendarHighlights(highlights)
+    }).finally(() => setIsLoading(false))
   }, [employeeId])
 
   const firstName = user?.first_name || user?.email
+  const remainingDays = balances.reduce((sum, b) => sum + Number(b.remaining_days), 0)
+  const usedDays = balances.reduce((sum, b) => sum + Number(b.used_days), 0)
+  const leaveSlices: DonutSlice[] = [
+    { label: 'Remaining', value: remainingDays, color: '#10b981' },
+    { label: 'Used', value: usedDays, color: '#f59e0b' },
+  ]
 
   return (
     <div className="space-y-8">
       <p className="text-sm text-[#5a6a85]">Welcome back, {firstName}.</p>
+
+      {user?.employee && (
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+          <StatCard
+            label="Leave Days Remaining"
+            value={remainingDays}
+            icon={CalendarIcon}
+            to="/leave-requests"
+            highlight
+          />
+          <StatCard
+            label="Pending Requests"
+            value={pendingRequests.length}
+            icon={PeopleIcon}
+            to="/leave-requests"
+          />
+          <StatCard label="Total Payslips" value={totalPayslips} icon={WalletIcon} to="/payroll" />
+        </div>
+      )}
 
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
         <section className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-black/5">
@@ -123,77 +170,53 @@ function EmployeeDashboard() {
           <Spinner className="h-6 w-6 text-[#1c2f4d]" />
         </div>
       ) : (
-        <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-          <section className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-black/5">
-            <div className="flex items-center justify-between">
-              <h2 className="text-sm font-semibold text-[#5a6a85] uppercase">Leave Balance</h2>
-              <Link to="/leave-requests" className="text-xs font-semibold text-[#1c2f4d] hover:underline">
-                View all
-              </Link>
-            </div>
-            <div className="mt-4 space-y-3">
-              {balances.length > 0 ? (
-                balances.map((balance) => (
-                  <div key={balance.id} className="text-sm">
-                    <div className="flex justify-between">
-                      <span className="text-[#1c2f4d]">{balance.leave_type_name}</span>
-                      <span className="font-medium text-[#1c2f4d]">
-                        {balance.remaining_days} / {balance.allocated_days} days
-                      </span>
+        <>
+          <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+            <DonutChart title="Leave Balance" slices={leaveSlices} />
+            <MiniCalendar title="My Leave This Month" highlights={calendarHighlights} />
+          </div>
+
+          <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+            <section className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-black/5">
+              <div className="flex items-center justify-between">
+                <h2 className="text-sm font-semibold text-[#5a6a85] uppercase">Recent Payslips</h2>
+                <Link to="/payroll" className="text-xs font-semibold text-[#1c2f4d] hover:underline">
+                  View all
+                </Link>
+              </div>
+              <div className="mt-4 space-y-3">
+                {payslips.length > 0 ? (
+                  payslips.map((payslip) => (
+                    <div key={payslip.id} className="flex justify-between text-sm">
+                      <span className="text-[#5a6a85]">{payslip.generated_at.slice(0, 10)}</span>
+                      <span className="font-medium text-[#1c2f4d]">{payslip.net_pay}</span>
                     </div>
-                  </div>
-                ))
-              ) : (
-                <p className="text-sm text-[#5a6a85]">No leave balances set up yet.</p>
-              )}
-              {pendingRequests.length > 0 && (
-                <p className="pt-2 text-xs text-[#93a2bc]">
-                  {pendingRequests.length} request{pendingRequests.length > 1 ? 's' : ''} awaiting
-                  approval.
-                </p>
-              )}
-            </div>
-          </section>
+                  ))
+                ) : (
+                  <p className="text-sm text-[#5a6a85]">No payslips yet.</p>
+                )}
+              </div>
+            </section>
 
-          <section className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-black/5">
-            <div className="flex items-center justify-between">
-              <h2 className="text-sm font-semibold text-[#5a6a85] uppercase">Recent Payslips</h2>
-              <Link to="/payroll" className="text-xs font-semibold text-[#1c2f4d] hover:underline">
-                View all
-              </Link>
-            </div>
-            <div className="mt-4 space-y-3">
-              {payslips.length > 0 ? (
-                payslips.map((payslip) => (
-                  <div key={payslip.id} className="flex justify-between text-sm">
-                    <span className="text-[#5a6a85]">{payslip.generated_at.slice(0, 10)}</span>
-                    <span className="font-medium text-[#1c2f4d]">{payslip.net_pay}</span>
-                  </div>
-                ))
-              ) : (
-                <p className="text-sm text-[#5a6a85]">No payslips yet.</p>
-              )}
-            </div>
-          </section>
-
-          <section className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-black/5">
-            <h2 className="text-sm font-semibold text-[#5a6a85] uppercase">Recent Activity</h2>
-            <div className="mt-4 space-y-3">
-              {notifications.length > 0 ? (
-                notifications.map((notification) => (
-                  <div key={notification.id} className="text-sm">
-                    <p className="text-[#1c2f4d]">{notification.message}</p>
-                    <p className="text-xs text-[#93a2bc]">
-                      {new Date(notification.created_at).toLocaleString()}
-                    </p>
-                  </div>
-                ))
-              ) : (
-                <p className="text-sm text-[#5a6a85]">No recent activity.</p>
-              )}
-            </div>
-          </section>
-        </div>
+            <section className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-black/5">
+              <h2 className="text-sm font-semibold text-[#5a6a85] uppercase">Recent Activity</h2>
+              <div className="mt-4 space-y-3">
+                {notifications.length > 0 ? (
+                  notifications.map((notification) => (
+                    <div key={notification.id} className="text-sm">
+                      <p className="text-[#1c2f4d]">{notification.message}</p>
+                      <p className="text-xs text-[#93a2bc]">
+                        {new Date(notification.created_at).toLocaleString()}
+                      </p>
+                    </div>
+                  ))
+                ) : (
+                  <p className="text-sm text-[#5a6a85]">No recent activity.</p>
+                )}
+              </div>
+            </section>
+          </div>
+        </>
       )}
     </div>
   )
