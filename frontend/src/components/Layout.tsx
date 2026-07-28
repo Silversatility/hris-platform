@@ -1,16 +1,21 @@
 import { useEffect, useState, type ComponentType } from 'react'
 import { Link, NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import { useSiteSettings } from '../context/SiteSettingsContext'
 import FullScreenLoader from './FullScreenLoader'
 import {
+  BuildingIcon,
   CalendarIcon,
+  CheckBadgeIcon,
   ChevronDownIcon,
   DashboardIcon,
   LogoutIcon,
   PeopleIcon,
+  PinIcon,
   SearchIcon,
   SettingsIcon,
   TicketIcon,
+  UserIcon,
   WalletIcon,
 } from './icons'
 import NotificationBell from './NotificationBell'
@@ -29,7 +34,7 @@ interface NavGroupEntry {
   type: 'group'
   label: string
   icon: IconComponent
-  items: { to: string; label: string }[]
+  items: { to: string; label: string; icon: IconComponent }[]
 }
 
 type NavEntry = NavLinkEntry | NavGroupEntry
@@ -41,9 +46,9 @@ const NAV_STRUCTURE: NavEntry[] = [
     label: 'Workforce',
     icon: PeopleIcon,
     items: [
-      { to: '/employees', label: 'Employees' },
-      { to: '/departments', label: 'Departments' },
-      { to: '/branches', label: 'Branches' },
+      { to: '/employees', label: 'Employees', icon: UserIcon },
+      { to: '/departments', label: 'Departments', icon: BuildingIcon },
+      { to: '/branches', label: 'Branches', icon: PinIcon },
     ],
   },
   {
@@ -51,21 +56,21 @@ const NAV_STRUCTURE: NavEntry[] = [
     label: 'Time Off',
     icon: CalendarIcon,
     items: [
-      { to: '/leave-requests', label: 'Leave Requests' },
-      { to: '/leave-calendar', label: 'Calendar' },
+      { to: '/leave-requests', label: 'Leave Requests', icon: CheckBadgeIcon },
+      { to: '/leave-calendar', label: 'Calendar', icon: CalendarIcon },
     ],
   },
   {
     type: 'group',
     label: 'Payroll',
     icon: WalletIcon,
-    items: [{ to: '/payroll', label: 'Payroll' }],
+    items: [{ to: '/payroll', label: 'Payroll', icon: WalletIcon }],
   },
   {
     type: 'group',
     label: 'Support',
     icon: TicketIcon,
-    items: [{ to: '/tickets', label: 'Tickets' }],
+    items: [{ to: '/tickets', label: 'Tickets', icon: TicketIcon }],
   },
   { type: 'link', to: '/settings', label: 'Settings', icon: SettingsIcon },
 ]
@@ -88,6 +93,7 @@ function findActiveGroupLabel(pathname: string) {
 
 function Layout() {
   const { user, logout, isLoggingOut } = useAuth()
+  const { logoUrl } = useSiteSettings()
   const navigate = useNavigate()
   const location = useLocation()
   const [openGroup, setOpenGroup] = useState<string | null>(() =>
@@ -113,10 +119,18 @@ function Layout() {
     <div className="flex min-h-screen bg-[#f8fafc]">
       {isLoggingOut && <FullScreenLoader />}
       <aside className="flex w-64 flex-col border-r border-[#e5e7eb] bg-white">
-        <div className="flex items-center gap-2 px-6 py-6">
-          <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#4f46e5] text-sm font-bold text-white">
-            H
-          </span>
+        <div className="flex items-center gap-3 px-6 py-6">
+          {logoUrl ? (
+            <img
+              src={logoUrl}
+              alt="Company logo"
+              className="h-12 w-12 shrink-0 rounded-lg object-contain"
+            />
+          ) : (
+            <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-[#4f46e5] text-lg font-bold text-white">
+              H
+            </span>
+          )}
           <span className="text-lg font-bold text-[#111827]">HRIS Platform</span>
         </div>
 
@@ -176,21 +190,25 @@ function Layout() {
                   }`}
                 >
                   <div className="mt-1 space-y-1 pl-8">
-                    {items.map((item) => (
-                      <NavLink
-                        key={item.to}
-                        to={item.to}
-                        className={({ isActive }) =>
-                          `block rounded-full px-4 py-2 text-sm font-medium transition-colors ${
-                            isActive
-                              ? 'bg-[#eef2ff] text-[#4f46e5]'
-                              : 'text-[#4b5563] hover:bg-[#f3f4f6] hover:text-[#111827]'
-                          }`
-                        }
-                      >
-                        {item.label}
-                      </NavLink>
-                    ))}
+                    {items.map((item) => {
+                      const ItemIcon = item.icon
+                      return (
+                        <NavLink
+                          key={item.to}
+                          to={item.to}
+                          className={({ isActive }) =>
+                            `flex items-center gap-2.5 rounded-full px-4 py-2 text-sm font-medium transition-colors ${
+                              isActive
+                                ? 'bg-[#eef2ff] text-[#4f46e5]'
+                                : 'text-[#4b5563] hover:bg-[#f3f4f6] hover:text-[#111827]'
+                            }`
+                          }
+                        >
+                          <ItemIcon className="h-4 w-4" />
+                          {item.label}
+                        </NavLink>
+                      )
+                    })}
                   </div>
                 </div>
               </div>

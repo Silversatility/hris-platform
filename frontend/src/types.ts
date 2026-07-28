@@ -224,6 +224,11 @@ export interface TicketRecord {
   updated_at: string
 }
 
+export interface SiteSettingsRecord {
+  logo: string | null
+  updated_at: string
+}
+
 export interface PaginatedResponse<T> {
   count: number
   next: string | null
