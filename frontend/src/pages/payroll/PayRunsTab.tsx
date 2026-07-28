@@ -1,4 +1,3 @@
-import axios from 'axios'
 import { Fragment, useCallback, useEffect, useState } from 'react'
 import MarkPaidModal from '../../components/MarkPaidModal'
 import PayRunFormModal from '../../components/PayRunFormModal'
@@ -32,19 +31,6 @@ interface MarkPaidTarget {
   label: string
 }
 
-function extractPayMongoErrorMessage(err: unknown): string {
-  if (axios.isAxiosError(err) && err.response?.data) {
-    const data: unknown = err.response.data
-    if (Array.isArray(data)) return data.join(' ')
-    if (typeof data === 'object' && data !== null) {
-      return Object.values(data as Record<string, string[] | string>)
-        .map((messages) => (Array.isArray(messages) ? messages.join(' ') : messages))
-        .join(' — ')
-    }
-  }
-  return 'Failed to pay out via PayMongo.'
-}
-
 function PaidBadge({ record }: { record: { is_paid: boolean; payment_method: string } }) {
   if (!record.is_paid) {
     return (
@@ -65,8 +51,6 @@ function PayRunDetail({ payRun }: { payRun: PayRunRecord }) {
   const [payouts, setPayouts] = useState<CommissionPayoutRecord[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [markPaidTarget, setMarkPaidTarget] = useState<MarkPaidTarget | null>(null)
-  const [paymongoBusyId, setPaymongoBusyId] = useState<number | null>(null)
-  const [paymongoErrors, setPaymongoErrors] = useState<Record<number, string>>({})
 
   const loadDetail = useCallback(() => {
     setIsLoading(true)
@@ -88,23 +72,6 @@ function PayRunDetail({ payRun }: { payRun: PayRunRecord }) {
   }, [loadDetail])
 
   const canMarkPaid = payRun.status === 'completed'
-
-  async function handlePayViaPaymongo(payout: CommissionPayoutRecord) {
-    setPaymongoErrors((prev) => {
-      const next = { ...prev }
-      delete next[payout.id]
-      return next
-    })
-    setPaymongoBusyId(payout.id)
-    try {
-      await apiClient.post(`/api/commission-payouts/${payout.id}/pay-via-paymongo/`)
-      loadDetail()
-    } catch (err) {
-      setPaymongoErrors((prev) => ({ ...prev, [payout.id]: extractPayMongoErrorMessage(err) }))
-    } finally {
-      setPaymongoBusyId(null)
-    }
-  }
 
   const markPaidEndpoint = markPaidTarget
     ? markPaidTarget.kind === 'payslip'
@@ -196,54 +163,33 @@ function PayRunDetail({ payRun }: { payRun: PayRunRecord }) {
               </thead>
               <tbody className="divide-y divide-[#f0ece0]">
                 {payouts.map((payout) => (
-                  <Fragment key={payout.id}>
-                    <tr>
-                      <td className="px-4 py-2 text-[#1c2f4d]">{payout.agent_display_name}</td>
-                      <td className="px-4 py-2 text-[#5a6a85]">{payout.line_items.length}</td>
-                      <td className="px-4 py-2 font-medium text-[#1c2f4d]">
-                        {payout.total_commission}
-                      </td>
-                      <td className="px-4 py-2">
-                        {payout.is_paid ? (
-                          <PaidBadge record={payout} />
-                        ) : canMarkPaid ? (
-                          <div className="flex flex-wrap gap-2">
-                            <button
-                              onClick={() =>
-                                setMarkPaidTarget({
-                                  kind: 'payout',
-                                  id: payout.id,
-                                  label: `${payout.agent_display_name}'s commission payout`,
-                                })
-                              }
-                              className="rounded-full px-3 py-1 text-xs font-semibold text-[#1c2f4d] ring-1 ring-[#e7ded0] hover:bg-[#f4efe2]"
-                            >
-                              Mark Paid
-                            </button>
-                            <button
-                              onClick={() => handlePayViaPaymongo(payout)}
-                              disabled={paymongoBusyId === payout.id}
-                              className="inline-flex items-center gap-1 rounded-full bg-[#1c2f4d] px-3 py-1 text-xs font-semibold text-[#f4efe2] hover:bg-[#0d1b30] disabled:opacity-50"
-                            >
-                              {paymongoBusyId === payout.id && <Spinner className="h-3 w-3" />}
-                              Pay via PayMongo
-                            </button>
-                          </div>
-                        ) : (
-                          <PaidBadge record={payout} />
-                        )}
-                      </td>
-                    </tr>
-                    {paymongoErrors[payout.id] && (
-                      <tr>
-                        <td colSpan={4} className="px-4 pb-2">
-                          <p className="rounded-lg bg-rose-50 px-3 py-2 text-xs text-rose-600">
-                            {paymongoErrors[payout.id]}
-                          </p>
-                        </td>
-                      </tr>
-                    )}
-                  </Fragment>
+                  <tr key={payout.id}>
+                    <td className="px-4 py-2 text-[#1c2f4d]">{payout.agent_display_name}</td>
+                    <td className="px-4 py-2 text-[#5a6a85]">{payout.line_items.length}</td>
+                    <td className="px-4 py-2 font-medium text-[#1c2f4d]">
+                      {payout.total_commission}
+                    </td>
+                    <td className="px-4 py-2">
+                      {payout.is_paid ? (
+                        <PaidBadge record={payout} />
+                      ) : canMarkPaid ? (
+                        <button
+                          onClick={() =>
+                            setMarkPaidTarget({
+                              kind: 'payout',
+                              id: payout.id,
+                              label: `${payout.agent_display_name}'s commission payout`,
+                            })
+                          }
+                          className="rounded-full px-3 py-1 text-xs font-semibold text-[#1c2f4d] ring-1 ring-[#e7ded0] hover:bg-[#f4efe2]"
+                        >
+                          Mark Paid
+                        </button>
+                      ) : (
+                        <PaidBadge record={payout} />
+                      )}
+                    </td>
+                  </tr>
                 ))}
               </tbody>
             </table>

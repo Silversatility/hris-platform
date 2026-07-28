@@ -200,7 +200,7 @@ function SalesAgentFormModal({ isOpen, agent, onClose, onSaved }: SalesAgentForm
 
         <div className="border-t border-[#f0ece0] pt-4">
           <p className="mb-3 text-xs font-semibold uppercase text-[#5a6a85]">
-            Payout details (PayMongo bank transfer)
+            Bank details (for manual payouts)
           </p>
           <div className="grid grid-cols-2 gap-3">
             <div>
