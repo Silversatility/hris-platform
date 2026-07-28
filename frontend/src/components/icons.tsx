@@ -151,6 +151,61 @@ export function WalletIcon({ className }: IconProps) {
   )
 }
 
+export function CarIcon({ className }: IconProps) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" className={className}>
+      <path
+        d="M4 16v-3.5L6 8h12l2 4.5V16"
+        stroke="currentColor"
+        strokeWidth="1.75"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M3.5 16h17v2a1 1 0 0 1-1 1h-1a1 1 0 0 1-1-1v-1h-11v1a1 1 0 0 1-1 1h-1a1 1 0 0 1-1-1v-2Z"
+        stroke="currentColor"
+        strokeWidth="1.75"
+        strokeLinejoin="round"
+      />
+      <circle cx="7.5" cy="16" r="1.25" stroke="currentColor" strokeWidth="1.5" />
+      <circle cx="16.5" cy="16" r="1.25" stroke="currentColor" strokeWidth="1.5" />
+    </svg>
+  )
+}
+
+export function TrophyIcon({ className }: IconProps) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" className={className}>
+      <path
+        d="M7 4h10v5a5 5 0 0 1-10 0V4Z"
+        stroke="currentColor"
+        strokeWidth="1.75"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M7 5H4.5A1.5 1.5 0 0 0 3 6.5c0 2 1.5 3.5 4 3.5M17 5h2.5A1.5 1.5 0 0 1 21 6.5c0 2-1.5 3.5-4 3.5"
+        stroke="currentColor"
+        strokeWidth="1.6"
+      />
+      <path d="M12 14v3M9 20h6M9.5 17h5l.5 3H9l.5-3Z" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
+    </svg>
+  )
+}
+
+export function CheckBadgeIcon({ className }: IconProps) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" className={className}>
+      <circle cx="12" cy="12" r="8.5" stroke="currentColor" strokeWidth="1.75" />
+      <path
+        d="M8.5 12.3l2.2 2.2 4.8-5"
+        stroke="currentColor"
+        strokeWidth="1.75"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  )
+}
+
 export function BellIcon({ className }: IconProps) {
   return (
     <svg viewBox="0 0 24 24" fill="none" className={className}>

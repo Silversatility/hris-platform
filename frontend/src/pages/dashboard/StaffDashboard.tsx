@@ -5,7 +5,15 @@ import MiniCalendar from '../../components/MiniCalendar'
 import type { MonthlyBarDatum } from '../../components/MonthlyBarChart'
 import MonthlyBarChart from '../../components/MonthlyBarChart'
 import DonutChart, { type DonutSlice } from '../../components/DonutChart'
-import { BuildingIcon, CalendarIcon, PeopleIcon, WalletIcon } from '../../components/icons'
+import {
+  BuildingIcon,
+  CalendarIcon,
+  CarIcon,
+  CheckBadgeIcon,
+  PeopleIcon,
+  TrophyIcon,
+  WalletIcon,
+} from '../../components/icons'
 import Spinner from '../../components/Spinner'
 import StatCard from '../../components/StatCard'
 import { apiClient } from '../../lib/apiClient'
@@ -15,6 +23,7 @@ import type {
   NotificationRecord,
   PaginatedResponse,
   PayRunRecord,
+  SaleRecord,
 } from '../../types'
 
 const MONTH_LABELS = [
@@ -44,11 +53,27 @@ const STATUS_LABELS: Record<string, string> = {
   terminated: 'Terminated',
 }
 
+function formatPeso(amount: number) {
+  return `₱${amount.toLocaleString('en-PH', { maximumFractionDigits: 0 })}`
+}
+
 interface Stats {
   activeEmployees: number
   departments: number
   pendingLeaveRequests: number
   draftPayRuns: number
+}
+
+interface AgentTotal {
+  name: string
+  cars: number
+  revenue: number
+}
+
+interface AttendanceSummary {
+  perfectCount: number
+  totalActive: number
+  names: string[]
 }
 
 function StaffDashboard() {
@@ -58,6 +83,14 @@ function StaffDashboard() {
   const [employeeStatusSlices, setEmployeeStatusSlices] = useState<DonutSlice[]>([])
   const [leaveByMonth, setLeaveByMonth] = useState<MonthlyBarDatum[]>([])
   const [calendarHighlights, setCalendarHighlights] = useState<CalendarHighlight[]>([])
+  const [carsSoldThisMonth, setCarsSoldThisMonth] = useState(0)
+  const [profitThisMonth, setProfitThisMonth] = useState(0)
+  const [topAgents, setTopAgents] = useState<AgentTotal[]>([])
+  const [attendance, setAttendance] = useState<AttendanceSummary>({
+    perfectCount: 0,
+    totalActive: 0,
+    names: [],
+  })
   const [isLoading, setIsLoading] = useState(true)
 
   const currentYear = new Date().getFullYear()
@@ -65,6 +98,10 @@ function StaffDashboard() {
 
   useEffect(() => {
     const now = new Date()
+    const nowMonth = now.getMonth()
+    const monthStart = new Date(currentYear, nowMonth, 1)
+    const monthEnd = new Date(currentYear, nowMonth + 1, 0)
+
     Promise.all([
       apiClient.get<PaginatedResponse<EmployeeRecord>>('/api/employees/?page_size=200'),
       apiClient.get<PaginatedResponse<unknown>>('/api/departments/?is_active=true&page_size=1'),
@@ -74,6 +111,7 @@ function StaffDashboard() {
       apiClient.get<PaginatedResponse<LeaveRequestRecord>>('/api/leave-requests/?page_size=200'),
       apiClient.get<PaginatedResponse<PayRunRecord>>('/api/pay-runs/?page_size=50'),
       apiClient.get<PaginatedResponse<NotificationRecord>>('/api/notifications/?page_size=5'),
+      apiClient.get<PaginatedResponse<SaleRecord>>('/api/sales/?page_size=200'),
     ]).then(
       ([
         employeesRes,
@@ -82,13 +120,14 @@ function StaffDashboard() {
         allLeaveRes,
         payRunsRes,
         notificationsRes,
+        salesRes,
       ]) => {
         const employees = employeesRes.data.results
-        const activeEmployees = employees.filter((e) => e.status === 'active').length
+        const activeEmployees = employees.filter((e) => e.status === 'active')
         const draftPayRuns = payRunsRes.data.results.filter((p) => p.status === 'draft').length
 
         setStats({
-          activeEmployees,
+          activeEmployees: activeEmployees.length,
           departments: departmentsRes.data.count,
           pendingLeaveRequests: pendingLeaveRes.data.count,
           draftPayRuns,
@@ -118,12 +157,16 @@ function StaffDashboard() {
         }
         setLeaveByMonth(monthly)
 
-        const nowMonth = now.getMonth()
         const highlights: CalendarHighlight[] = []
+        const employeesOnLeaveThisMonth = new Set<number>()
         for (const request of allLeaveRes.data.results) {
           if (request.status !== 'approved') continue
-          const date = new Date(request.start_date)
-          if (date.getFullYear() === currentYear && date.getMonth() === nowMonth) {
+          const start = new Date(request.start_date)
+          const end = new Date(request.end_date)
+          if (start <= monthEnd && end >= monthStart) {
+            employeesOnLeaveThisMonth.add(request.employee)
+          }
+          if (start.getFullYear() === currentYear && start.getMonth() === nowMonth) {
             highlights.push({
               date: request.start_date,
               color: '#10b981',
@@ -142,6 +185,44 @@ function StaffDashboard() {
           }
         }
         setCalendarHighlights(highlights)
+
+        const perfectAttendees = activeEmployees.filter(
+          (e) => !employeesOnLeaveThisMonth.has(e.id)
+        )
+        setAttendance({
+          perfectCount: perfectAttendees.length,
+          totalActive: activeEmployees.length,
+          names: perfectAttendees.map((e) => e.full_name),
+        })
+
+        const salesThisMonth = salesRes.data.results.filter((sale) => {
+          const date = new Date(sale.sale_date)
+          return date.getFullYear() === currentYear && date.getMonth() === nowMonth
+        })
+        setCarsSoldThisMonth(salesThisMonth.length)
+        const totalRevenue = salesThisMonth.reduce((sum, s) => sum + Number(s.sale_amount), 0)
+        const totalCommission = salesThisMonth.reduce(
+          (sum, s) => sum + Number(s.commission_amount),
+          0
+        )
+        setProfitThisMonth(totalRevenue - totalCommission)
+
+        const agentTotals = new Map<string, AgentTotal>()
+        for (const sale of salesThisMonth) {
+          const existing = agentTotals.get(sale.agent_display_name) ?? {
+            name: sale.agent_display_name,
+            cars: 0,
+            revenue: 0,
+          }
+          existing.cars += 1
+          existing.revenue += Number(sale.sale_amount)
+          agentTotals.set(sale.agent_display_name, existing)
+        }
+        setTopAgents(
+          Array.from(agentTotals.values())
+            .sort((a, b) => b.revenue - a.revenue)
+            .slice(0, 5)
+        )
       }
     ).finally(() => setIsLoading(false))
   }, [currentYear, previousYear])
@@ -184,6 +265,21 @@ function StaffDashboard() {
         />
       </div>
 
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+        <StatCard label="Cars Sold This Month" value={carsSoldThisMonth} icon={CarIcon} to="/payroll" />
+        <StatCard
+          label="Profit This Month"
+          value={formatPeso(profitThisMonth)}
+          icon={WalletIcon}
+          to="/payroll"
+        />
+        <StatCard
+          label="Perfect Attendance"
+          value={`${attendance.perfectCount} / ${attendance.totalActive}`}
+          icon={CheckBadgeIcon}
+        />
+      </div>
+
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         <div className="lg:col-span-2">
           <MonthlyBarChart
@@ -194,6 +290,76 @@ function StaffDashboard() {
           />
         </div>
         <DonutChart title="Employee Status" slices={employeeStatusSlices} />
+      </div>
+
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+        <section className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-black/5">
+          <div className="flex items-center justify-between">
+            <h2 className="flex items-center gap-2 text-sm font-semibold text-[#5a6a85] uppercase">
+              <TrophyIcon className="h-4 w-4" />
+              Top Agents This Month
+            </h2>
+            <Link to="/payroll" className="text-xs font-semibold text-[#1c2f4d] hover:underline">
+              View all
+            </Link>
+          </div>
+          <div className="mt-4 space-y-3">
+            {topAgents.length > 0 ? (
+              topAgents.map((agent, index) => (
+                <div
+                  key={agent.name}
+                  className="flex items-center justify-between rounded-xl bg-[#faf6ec] px-4 py-3 text-sm"
+                >
+                  <div className="flex items-center gap-3">
+                    <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[#1c2f4d] text-xs font-bold text-white">
+                      {index + 1}
+                    </span>
+                    <div>
+                      <p className="font-medium text-[#1c2f4d]">{agent.name}</p>
+                      <p className="text-xs text-[#5a6a85]">
+                        {agent.cars} car{agent.cars > 1 ? 's' : ''} sold
+                      </p>
+                    </div>
+                  </div>
+                  <span className="font-medium text-[#1c2f4d]">{formatPeso(agent.revenue)}</span>
+                </div>
+              ))
+            ) : (
+              <p className="text-sm text-[#5a6a85]">No sales recorded this month.</p>
+            )}
+          </div>
+        </section>
+
+        <section className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-black/5">
+          <h2 className="flex items-center gap-2 text-sm font-semibold text-[#5a6a85] uppercase">
+            <CheckBadgeIcon className="h-4 w-4" />
+            Perfect Attendance
+          </h2>
+          <p className="mt-1 text-xs text-[#5a6a85]">
+            Active employees with no approved leave this month.
+          </p>
+          <div className="mt-4 flex flex-wrap gap-2">
+            {attendance.names.length > 0 ? (
+              <>
+                {attendance.names.slice(0, 10).map((name) => (
+                  <span
+                    key={name}
+                    className="rounded-full bg-emerald-50 px-3 py-1 text-xs font-medium text-emerald-700"
+                  >
+                    {name}
+                  </span>
+                ))}
+                {attendance.names.length > 10 && (
+                  <span className="rounded-full bg-[#f4efe2] px-3 py-1 text-xs font-medium text-[#5a6a85]">
+                    +{attendance.names.length - 10} more
+                  </span>
+                )}
+              </>
+            ) : (
+              <p className="text-sm text-[#5a6a85]">No active employees on record.</p>
+            )}
+          </div>
+        </section>
       </div>
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
