@@ -28,9 +28,7 @@ class SalesAgent(models.Model):
     status = models.CharField(max_length=20, choices=Status.choices, default=Status.ACTIVE)
     date_joined = models.DateField()
     bank_name = models.CharField(max_length=150, blank=True)
-    bank_bic = models.CharField(
-        max_length=20, blank=True, help_text="Bank Identifier Code, used for PayMongo transfers."
-    )
+    bank_bic = models.CharField(max_length=20, blank=True, help_text="Bank Identifier Code.")
     bank_account_number = models.CharField(max_length=50, blank=True)
     bank_account_holder_name = models.CharField(max_length=150, blank=True)
 
@@ -81,9 +79,9 @@ class PaymentMethod(models.TextChoices):
 
 class PaymentTrackingMixin(models.Model):
     """
-    Payment can be recorded manually (HR pays outside the system and logs
-    it) or, for agent commissions, triggered via a real PayMongo bank
-    transfer -- see CommissionPayoutViewSet.pay_via_paymongo.
+    Payment is recorded manually -- HR pays via bank/GCash/etc. outside the
+    system and logs it here. Bank details on SalesAgent are kept on file for
+    HR's reference when doing that transfer, not for a live payout API.
     """
 
     is_paid = models.BooleanField(default=False)

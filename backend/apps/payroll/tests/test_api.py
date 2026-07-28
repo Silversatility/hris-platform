@@ -1,5 +1,4 @@
 from decimal import Decimal
-from unittest.mock import patch
 
 import pytest
 from django.urls import reverse
@@ -7,7 +6,6 @@ from rest_framework.test import APIClient
 
 from apps.employees.models import Department, Employee
 from apps.payroll.models import CommissionPayout, PayRun, Payslip, Sale, SalesAgent
-from apps.payroll.paymongo_client import PayMongoError
 from apps.users.models import User
 
 pytestmark = pytest.mark.django_db
@@ -382,118 +380,3 @@ def test_staff_can_mark_commission_payout_paid(staff_user, agent, pay_run):
     assert data["payment_method"] == "gcash"
 
 
-def _give_agent_bank_details(agent):
-    agent.bank_name = "BDO Unibank"
-    agent.bank_bic = "BNORPHMM"
-    agent.bank_account_number = "0012345678"
-    agent.bank_account_holder_name = "Carlo Reyes"
-    agent.save(
-        update_fields=["bank_name", "bank_bic", "bank_account_number", "bank_account_holder_name"]
-    )
-
-
-def test_pay_via_paymongo_requires_agent_bank_details(staff_user, agent, pay_run):
-    payout = CommissionPayout.objects.create(pay_run=pay_run, agent=agent)
-    pay_run.status = PayRun.Status.COMPLETED
-    pay_run.save(update_fields=["status"])
-    client = APIClient()
-    client.force_authenticate(staff_user)
-
-    response = client.post(reverse("commission-payout-pay-via-paymongo", args=[payout.id]))
-
-    assert response.status_code == 400
-    assert "bank" in str(response.json()).lower()
-
-
-def test_pay_via_paymongo_requires_completed_pay_run(staff_user, agent, pay_run):
-    _give_agent_bank_details(agent)
-    payout = CommissionPayout.objects.create(pay_run=pay_run, agent=agent)
-    client = APIClient()
-    client.force_authenticate(staff_user)
-
-    response = client.post(reverse("commission-payout-pay-via-paymongo", args=[payout.id]))
-
-    assert response.status_code == 400
-    assert "completed" in str(response.json()).lower()
-
-
-def test_pay_via_paymongo_success(staff_user, agent, pay_run):
-    _give_agent_bank_details(agent)
-    payout = CommissionPayout.objects.create(pay_run=pay_run, agent=agent)
-    pay_run.status = PayRun.Status.COMPLETED
-    pay_run.save(update_fields=["status"])
-    client = APIClient()
-    client.force_authenticate(staff_user)
-
-    fake_response = {
-        "data": {"attributes": {"transfers": [{"id": "batch_xfer_abc123", "status": "pending"}]}}
-    }
-    with patch(
-        "apps.payroll.views.paymongo_client.create_transfer",
-        return_value=fake_response,
-    ) as mock_create:
-        response = client.post(reverse("commission-payout-pay-via-paymongo", args=[payout.id]))
-
-    assert response.status_code == 200
-    data = response.json()
-    assert data["is_paid"] is True
-    assert data["payment_method"] == "bank_transfer"
-    assert data["payment_reference"] == "batch_xfer_abc123"
-    mock_create.assert_called_once()
-    call_kwargs = mock_create.call_args.kwargs
-    assert call_kwargs["destination_bic"] == "BNORPHMM"
-    assert call_kwargs["destination_number"] == "0012345678"
-    assert call_kwargs["destination_name"] == "Carlo Reyes"
-    assert call_kwargs["destination_bank_name"] == "BDO Unibank"
-
-    payout.refresh_from_db()
-    assert payout.is_paid is True
-    assert payout.payment_reference == "batch_xfer_abc123"
-
-
-def test_pay_via_paymongo_surfaces_paymongo_error(staff_user, agent, pay_run):
-    _give_agent_bank_details(agent)
-    payout = CommissionPayout.objects.create(pay_run=pay_run, agent=agent)
-    pay_run.status = PayRun.Status.COMPLETED
-    pay_run.save(update_fields=["status"])
-    client = APIClient()
-    client.force_authenticate(staff_user)
-
-    with patch(
-        "apps.payroll.views.paymongo_client.create_transfer",
-        side_effect=PayMongoError("Source Account Not Found."),
-    ):
-        response = client.post(reverse("commission-payout-pay-via-paymongo", args=[payout.id]))
-
-    assert response.status_code == 400
-    assert "Source Account Not Found" in str(response.json())
-
-    payout.refresh_from_db()
-    assert payout.is_paid is False
-
-
-def test_pay_via_paymongo_cannot_pay_twice(staff_user, agent, pay_run):
-    _give_agent_bank_details(agent)
-    payout = CommissionPayout.objects.create(pay_run=pay_run, agent=agent, is_paid=True)
-    pay_run.status = PayRun.Status.COMPLETED
-    pay_run.save(update_fields=["status"])
-    client = APIClient()
-    client.force_authenticate(staff_user)
-
-    response = client.post(reverse("commission-payout-pay-via-paymongo", args=[payout.id]))
-
-    assert response.status_code == 400
-    assert "already" in str(response.json()).lower()
-
-
-def test_non_staff_cannot_pay_via_paymongo(employee, agent, pay_run):
-    _give_agent_bank_details(agent)
-    payout = CommissionPayout.objects.create(pay_run=pay_run, agent=agent)
-    pay_run.status = PayRun.Status.COMPLETED
-    pay_run.save(update_fields=["status"])
-    client = APIClient()
-    client.force_authenticate(employee.user)
-
-    response = client.post(reverse("commission-payout-pay-via-paymongo", args=[payout.id]))
-
-    assert response.status_code == 403

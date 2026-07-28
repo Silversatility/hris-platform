@@ -7,11 +7,9 @@ from rest_framework.response import Response
 
 from apps.employees.models import Employee
 
-from . import paymongo_client
 from .models import (
     CommissionLineItem,
     CommissionPayout,
-    PaymentMethod,
     PayRun,
     Payslip,
     PayslipLineItem,
@@ -143,50 +141,6 @@ class CommissionPayoutViewSet(viewsets.ModelViewSet):
         payout = self.get_object()
         _mark_paid(request, payout)
         return Response(self.get_serializer(payout).data)
-
-    @action(detail=True, methods=["post"], url_path="pay-via-paymongo")
-    def pay_via_paymongo(self, request, pk=None):
-        payout = self.get_object()
-        if payout.pay_run.status != PayRun.Status.COMPLETED:
-            raise ValidationError("Can only pay out once the pay run is completed.")
-        if payout.is_paid:
-            raise ValidationError("Already marked as paid.")
-
-        agent = payout.agent
-        if not all(
-            [
-                agent.bank_account_number,
-                agent.bank_account_holder_name,
-                agent.bank_bic,
-                agent.bank_name,
-            ]
-        ):
-            raise ValidationError(
-                "This agent's bank details are incomplete. Add bank name, BIC, account "
-                "number, and account holder name before paying out."
-            )
-
-        try:
-            result = paymongo_client.create_transfer(
-                reference_number=f"commission-payout-{payout.id}",
-                destination_number=agent.bank_account_number,
-                destination_name=agent.bank_account_holder_name,
-                destination_bic=agent.bank_bic,
-                destination_bank_name=agent.bank_name,
-                amount=int(payout.total_commission * 100),
-                description=f"Commission payout for {agent.agent_id}",
-            )
-        except paymongo_client.PayMongoError as exc:
-            raise ValidationError(f"PayMongo transfer failed: {exc}") from exc
-
-        payout.is_paid = True
-        payout.paid_at = timezone.now()
-        payout.payment_method = PaymentMethod.BANK_TRANSFER
-        payout.payment_reference = paymongo_client.extract_transfer_reference(result)
-        payout.save(update_fields=["is_paid", "paid_at", "payment_method", "payment_reference"])
-
-        return Response(self.get_serializer(payout).data)
-
 
 class PayRunViewSet(viewsets.ModelViewSet):
     queryset = PayRun.objects.annotate(
