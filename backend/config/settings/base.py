@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     "apps.employees",
     "apps.leave_management",
     "apps.payroll",
+    "apps.notifications",
 ]
 
 MIDDLEWARE = [

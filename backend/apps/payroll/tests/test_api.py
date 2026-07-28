@@ -5,6 +5,7 @@ from django.urls import reverse
 from rest_framework.test import APIClient
 
 from apps.employees.models import Department, Employee
+from apps.notifications.models import Notification
 from apps.payroll.models import CommissionPayout, PayRun, Payslip, Sale, SalesAgent
 from apps.users.models import User
 
@@ -309,6 +310,7 @@ def test_staff_can_mark_payslip_paid_after_completion(staff_user, employee, pay_
     assert data["payment_method"] == "bank_transfer"
     assert data["payment_reference"] == "INSTAPAY-12345"
     assert data["paid_at"] is not None
+    assert Notification.objects.filter(recipient=employee.user, message__icontains="paid").exists()
 
 
 def test_cannot_mark_payslip_paid_before_pay_run_completed(staff_user, employee, pay_run):

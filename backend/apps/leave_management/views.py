@@ -6,6 +6,7 @@ from rest_framework.exceptions import PermissionDenied, ValidationError
 from rest_framework.response import Response
 
 from apps.common.permissions import IsStaffOrReadOnly
+from apps.notifications.models import notify
 
 from .models import LeaveBalance, LeaveRequest, LeaveType
 from .permissions import CanManageLeaveRequest
@@ -57,7 +58,17 @@ class LeaveRequestViewSet(viewsets.ModelViewSet):
         return queryset.filter(Q(employee=employee) | Q(employee_id__in=report_ids))
 
     def perform_create(self, serializer):
-        serializer.save(employee=self.request.user.employee)
+        leave_request = serializer.save(employee=self.request.user.employee)
+        manager = leave_request.employee.manager
+        if manager is not None:
+            requester_user = leave_request.employee.user
+            requester_name = requester_user.get_full_name() or requester_user.email
+            notify(
+                manager.user,
+                f"{requester_name} requested {leave_request.leave_type.name} leave "
+                f"({leave_request.start_date} to {leave_request.end_date}).",
+                link="/leave-requests",
+            )
 
     def _authorize_review(self, request, leave_request):
         if request.user.is_staff:
@@ -98,6 +109,13 @@ class LeaveRequestViewSet(viewsets.ModelViewSet):
         leave_request.reviewed_at = timezone.now()
         leave_request.save(update_fields=["status", "reviewed_by", "reviewed_at"])
 
+        notify(
+            leave_request.employee.user,
+            f"Your {leave_request.leave_type.name} leave request "
+            f"({leave_request.start_date} to {leave_request.end_date}) was approved.",
+            link="/leave-requests",
+        )
+
         return Response(self.get_serializer(leave_request).data)
 
     @action(detail=True, methods=["post"])
@@ -111,6 +129,13 @@ class LeaveRequestViewSet(viewsets.ModelViewSet):
         leave_request.reviewed_by = getattr(request.user, "employee", None)
         leave_request.reviewed_at = timezone.now()
         leave_request.save(update_fields=["status", "reviewed_by", "reviewed_at"])
+
+        notify(
+            leave_request.employee.user,
+            f"Your {leave_request.leave_type.name} leave request "
+            f"({leave_request.start_date} to {leave_request.end_date}) was rejected.",
+            link="/leave-requests",
+        )
 
         return Response(self.get_serializer(leave_request).data)
 

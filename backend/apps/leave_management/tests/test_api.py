@@ -7,6 +7,7 @@ from rest_framework.test import APIClient
 
 from apps.employees.models import Department, Employee
 from apps.leave_management.models import LeaveBalance, LeaveRequest, LeaveType
+from apps.notifications.models import Notification
 from apps.users.models import User
 
 pytestmark = pytest.mark.django_db
@@ -59,7 +60,7 @@ def balance(employee, leave_type):
     )
 
 
-def test_employee_can_create_own_leave_request(employee, leave_type):
+def test_employee_can_create_own_leave_request(employee, manager, leave_type):
     client = APIClient()
     client.force_authenticate(employee.user)
 
@@ -76,6 +77,7 @@ def test_employee_can_create_own_leave_request(employee, leave_type):
     assert response.status_code == 201
     assert response.json()["employee"] == employee.id
     assert response.json()["status"] == "pending"
+    assert Notification.objects.filter(recipient=manager.user).exists()
 
 
 def test_manager_can_approve_and_balance_is_deducted(employee, manager, leave_type, balance):
@@ -94,6 +96,9 @@ def test_manager_can_approve_and_balance_is_deducted(employee, manager, leave_ty
     assert response.json()["status"] == "approved"
     balance.refresh_from_db()
     assert balance.used_days == Decimal("5")
+    assert Notification.objects.filter(
+        recipient=employee.user, message__icontains="approved"
+    ).exists()
 
 
 def test_approve_fails_when_balance_insufficient(employee, manager, leave_type):
@@ -238,3 +243,22 @@ def test_skip_level_manager_sees_request_in_list(employee, manager, vp, leave_ty
     response = client.get(reverse("leave-request-list"))
 
     assert response.json()["count"] == 1
+
+
+def test_manager_can_reject_and_employee_is_notified(employee, manager, leave_type):
+    leave_request = LeaveRequest.objects.create(
+        employee=employee,
+        leave_type=leave_type,
+        start_date=date(2026, 8, 3),
+        end_date=date(2026, 8, 7),
+    )
+    client = APIClient()
+    client.force_authenticate(manager.user)
+
+    response = client.post(reverse("leave-request-reject", args=[leave_request.id]))
+
+    assert response.status_code == 200
+    assert response.json()["status"] == "rejected"
+    assert Notification.objects.filter(
+        recipient=employee.user, message__icontains="rejected"
+    ).exists()

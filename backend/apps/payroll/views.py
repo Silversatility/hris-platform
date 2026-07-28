@@ -6,6 +6,7 @@ from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 
 from apps.employees.models import Employee
+from apps.notifications.models import notify
 
 from .models import (
     CommissionLineItem,
@@ -43,6 +44,10 @@ def _mark_paid(request, instance):
     instance.payment_method = serializer.validated_data["payment_method"]
     instance.payment_reference = serializer.validated_data.get("payment_reference", "")
     instance.save(update_fields=["is_paid", "paid_at", "payment_method", "payment_reference"])
+
+    employee = getattr(instance, "employee", None)
+    if employee is not None:
+        notify(employee.user, "Your payslip has been marked as paid.", link="/payroll")
 
 
 class SalesAgentViewSet(viewsets.ModelViewSet):
