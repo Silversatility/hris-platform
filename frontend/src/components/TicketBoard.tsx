@@ -7,6 +7,7 @@ import {
   ALLOWED_TRANSITIONS,
   BOARD_COLUMNS,
   CATEGORY_LABELS,
+  COLUMN_HEADER_STYLES,
   PRIORITY_STYLES,
 } from '../lib/ticketDisplay'
 import type { EmployeeRecord, TicketRecord } from '../types'
@@ -22,6 +23,13 @@ function extractErrorMessage(err: unknown): string {
     }
   }
   return 'Something went wrong. Please try again.'
+}
+
+function initials(name: string) {
+  const parts = name.trim().split(/\s+/)
+  const first = parts[0]?.[0] ?? ''
+  const last = parts.length > 1 ? (parts[parts.length - 1]?.[0] ?? '') : ''
+  return `${first}${last}`.toUpperCase() || '?'
 }
 
 interface TicketBoardProps {
@@ -57,19 +65,30 @@ function TicketCard({
         )}
       </div>
       <p className="text-sm font-medium text-[#1c2f4d]">{ticket.subject}</p>
-      <div className="flex items-center justify-between">
-        <span
-          className={`rounded-full px-2 py-0.5 text-[10px] font-semibold capitalize ${
-            PRIORITY_STYLES[ticket.priority] ?? 'bg-slate-100 text-slate-700'
-          }`}
-        >
-          {ticket.priority}
-        </span>
-        <span className="text-[10px] text-[#93a2bc]">
-          {CATEGORY_LABELS[ticket.category] ?? ticket.category}
-        </span>
+      <div className="flex items-end justify-between">
+        <div className="space-y-1.5">
+          <span
+            className={`inline-block rounded-full px-2 py-0.5 text-[10px] font-semibold capitalize ${
+              PRIORITY_STYLES[ticket.priority] ?? 'bg-slate-100 text-slate-700'
+            }`}
+          >
+            {ticket.priority}
+          </span>
+          <p className="text-[10px] text-[#93a2bc]">
+            {CATEGORY_LABELS[ticket.category] ?? ticket.category}
+          </p>
+        </div>
+        {ticket.assigned_to_name ? (
+          <span
+            title={ticket.assigned_to_name}
+            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#dbe3ef] text-xs font-bold text-[#1c2f4d]"
+          >
+            {initials(ticket.assigned_to_name)}
+          </span>
+        ) : (
+          <span className="text-[10px] text-[#93a2bc]">Unassigned</span>
+        )}
       </div>
-      <p className="text-xs text-[#5a6a85]">{ticket.assigned_to_name ?? 'Unassigned'}</p>
     </div>
   )
 }
@@ -128,22 +147,26 @@ function TicketBoard({ tickets, isStaff, myEmployeeId, employees, onChanged }: T
           return (
             <div
               key={column.status}
-              onDragOver={(e) => e.preventDefault()}
-              onDrop={(e) => {
-                e.preventDefault()
-                handleDrop(column.status)
-              }}
-              className="flex min-h-[16rem] flex-col rounded-2xl bg-[#f4efe2] p-3"
+              className="flex min-h-[20rem] flex-col overflow-hidden rounded-2xl shadow-sm ring-1 ring-black/5"
             >
-              <div className="mb-3 flex items-center justify-between px-1">
-                <h3 className="text-xs font-bold tracking-wide text-[#1c2f4d] uppercase">
-                  {column.label}
-                </h3>
-                <span className="rounded-full bg-white px-2 py-0.5 text-xs font-semibold text-[#5a6a85]">
+              <div
+                className={`flex items-center justify-between px-4 py-3 ${
+                  COLUMN_HEADER_STYLES[column.status] ?? 'bg-slate-500'
+                }`}
+              >
+                <h3 className="text-sm font-bold text-white">{column.label}</h3>
+                <span className="rounded-full bg-white/25 px-2 py-0.5 text-xs font-bold text-white">
                   {columnTickets.length}
                 </span>
               </div>
-              <div className="flex-1 space-y-2">
+              <div
+                onDragOver={(e) => e.preventDefault()}
+                onDrop={(e) => {
+                  e.preventDefault()
+                  handleDrop(column.status)
+                }}
+                className="flex-1 space-y-2 bg-[#f4efe2] p-3"
+              >
                 {columnTickets.map((ticket) => (
                   <TicketCard
                     key={ticket.id}

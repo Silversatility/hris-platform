@@ -35,6 +35,16 @@ export const BOARD_COLUMNS: { status: string; label: string }[] = [
   { status: 'closed', label: 'Closed' },
 ]
 
+// Bold header-bar colors per column, matching the same semantic status
+// colors used elsewhere (STATUS_STYLES) so the board stays consistent
+// with the rest of the app instead of introducing a new palette.
+export const COLUMN_HEADER_STYLES: Record<string, string> = {
+  open: 'bg-amber-500',
+  in_progress: 'bg-sky-500',
+  resolved: 'bg-emerald-500',
+  closed: 'bg-slate-500',
+}
+
 // Which target columns a card can be dropped into, keyed by its current
 // status. Mirrors exactly what the backend's assign/resolve/close/reopen
 // actions actually allow -- dropping onto anything else is rejected.
