@@ -10,6 +10,7 @@ import LeaveRequests from './pages/LeaveRequests'
 import Login from './pages/Login'
 import NotFound from './pages/NotFound'
 import Payroll from './pages/Payroll'
+import PayslipPrintView from './pages/PayslipPrintView'
 import Profile from './pages/Profile'
 import Tickets from './pages/Tickets'
 
@@ -20,6 +21,7 @@ function App() {
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route element={<ProtectedRoute />}>
+            <Route path="/payslips/:id/print" element={<PayslipPrintView />} />
             <Route element={<Layout />}>
               <Route path="/" element={<Home />} />
               <Route path="/profile" element={<Profile />} />

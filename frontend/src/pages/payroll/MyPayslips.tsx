@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 import Spinner from '../../components/Spinner'
 import { apiClient } from '../../lib/apiClient'
 import type { PaginatedResponse, PayslipRecord } from '../../types'
@@ -57,26 +58,40 @@ function MyPayslips() {
           key={payslip.id}
           className="overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-black/5"
         >
-          <button
-            onClick={() => setExpandedId(expandedId === payslip.id ? null : payslip.id)}
-            className="flex w-full items-center justify-between px-6 py-4 text-left"
-          >
-            <span className="flex items-center gap-3 text-sm font-semibold text-[#1c2f4d]">
-              Payslip #{payslip.id} — Net Pay: {payslip.net_pay}
-              {payslip.is_paid ? (
-                <span className="rounded-full bg-emerald-100 px-2.5 py-0.5 text-xs font-semibold text-emerald-700">
-                  Paid via {PAYMENT_METHOD_LABELS[payslip.payment_method] ?? payslip.payment_method}
-                </span>
-              ) : (
-                <span className="rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-semibold text-slate-600">
-                  Unpaid
-                </span>
-              )}
-            </span>
-            <span className="text-xs text-[#5a6a85]">
-              {expandedId === payslip.id ? 'Hide' : 'View details'}
-            </span>
-          </button>
+          <div className="flex w-full items-center justify-between px-6 py-4">
+            <button
+              onClick={() => setExpandedId(expandedId === payslip.id ? null : payslip.id)}
+              className="flex flex-1 items-center gap-3 text-left"
+            >
+              <span className="flex items-center gap-3 text-sm font-semibold text-[#1c2f4d]">
+                Payslip #{payslip.id} — Net Pay: {payslip.net_pay}
+                {payslip.is_paid ? (
+                  <span className="rounded-full bg-emerald-100 px-2.5 py-0.5 text-xs font-semibold text-emerald-700">
+                    Paid via{' '}
+                    {PAYMENT_METHOD_LABELS[payslip.payment_method] ?? payslip.payment_method}
+                  </span>
+                ) : (
+                  <span className="rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-semibold text-slate-600">
+                    Unpaid
+                  </span>
+                )}
+              </span>
+            </button>
+            <div className="flex items-center gap-3">
+              <Link
+                to={`/payslips/${payslip.id}/print`}
+                className="rounded-full px-3 py-1 text-xs font-semibold text-[#1c2f4d] ring-1 ring-[#e7ded0] hover:bg-[#f4efe2]"
+              >
+                Print
+              </Link>
+              <button
+                onClick={() => setExpandedId(expandedId === payslip.id ? null : payslip.id)}
+                className="text-xs text-[#5a6a85]"
+              >
+                {expandedId === payslip.id ? 'Hide' : 'View details'}
+              </button>
+            </div>
+          </div>
           {expandedId === payslip.id && (
             <div className="border-t border-[#f0ece0] p-6">
               <dl className="grid grid-cols-2 gap-3 text-sm">

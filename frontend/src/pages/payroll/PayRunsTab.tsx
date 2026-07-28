@@ -1,4 +1,5 @@
 import { Fragment, useCallback, useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
 import MarkPaidModal from '../../components/MarkPaidModal'
 import PayRunFormModal from '../../components/PayRunFormModal'
 import { PlusIcon } from '../../components/icons'
@@ -104,6 +105,7 @@ function PayRunDetail({ payRun }: { payRun: PayRunRecord }) {
                   <th className="px-4 py-2">Deductions</th>
                   <th className="px-4 py-2">Net Pay</th>
                   <th className="px-4 py-2">Payment</th>
+                  <th className="px-4 py-2">Payslip</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-[#f0ece0]">
@@ -136,6 +138,16 @@ function PayRunDetail({ payRun }: { payRun: PayRunRecord }) {
                       ) : (
                         <PaidBadge record={payslip} />
                       )}
+                    </td>
+                    <td className="px-4 py-2">
+                      <Link
+                        to={`/payslips/${payslip.id}/print`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="rounded-full px-3 py-1 text-xs font-semibold text-[#1c2f4d] ring-1 ring-[#e7ded0] hover:bg-[#f4efe2]"
+                      >
+                        Print
+                      </Link>
                     </td>
                   </tr>
                 ))}

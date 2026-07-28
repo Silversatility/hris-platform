@@ -129,6 +129,11 @@ export interface PayslipRecord {
   employee: number
   employee_display_name: string
   employee_code: string
+  employee_job_title: string
+  employee_department: string
+  pay_period_start: string
+  pay_period_end: string
+  pay_date: string
   base_salary: string
   gross_pay: string
   total_deductions: string
