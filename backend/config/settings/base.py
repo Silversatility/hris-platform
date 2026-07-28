@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     "apps.leave_management",
     "apps.payroll",
     "apps.notifications",
+    "apps.ticketing",
 ]
 
 MIDDLEWARE = [
