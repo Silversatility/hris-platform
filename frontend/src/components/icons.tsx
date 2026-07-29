@@ -239,6 +239,26 @@ export function BellIcon({ className }: IconProps) {
   )
 }
 
+export function DocumentIcon({ className }: IconProps) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" className={className}>
+      <path
+        d="M6.5 3.5h7l4 4v13a1 1 0 0 1-1 1h-10a1 1 0 0 1-1-1v-16a1 1 0 0 1 1-1Z"
+        stroke="currentColor"
+        strokeWidth="1.75"
+        strokeLinejoin="round"
+      />
+      <path d="M13.5 3.5v4h4" stroke="currentColor" strokeWidth="1.75" strokeLinejoin="round" />
+      <path
+        d="M8.5 12.5h7M8.5 15.5h7M8.5 18.5h4"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+      />
+    </svg>
+  )
+}
+
 export function UserIcon({ className }: IconProps) {
   return (
     <svg viewBox="0 0 24 24" fill="none" className={className}>

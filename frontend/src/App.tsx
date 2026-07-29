@@ -4,6 +4,8 @@ import ProtectedRoute from './components/ProtectedRoute'
 import { AuthProvider } from './context/AuthContext'
 import { SiteSettingsProvider } from './context/SiteSettingsContext'
 import Branches from './pages/Branches'
+import COEPrintView from './pages/COEPrintView'
+import COERequests from './pages/COERequests'
 import Departments from './pages/Departments'
 import Employees from './pages/Employees'
 import Home from './pages/Home'
@@ -26,6 +28,7 @@ function App() {
             <Route path="/login" element={<Login />} />
             <Route element={<ProtectedRoute />}>
               <Route path="/payslips/:id/print" element={<PayslipPrintView />} />
+              <Route path="/coe-requests/:id/print" element={<COEPrintView />} />
               <Route element={<Layout />}>
                 <Route path="/" element={<Home />} />
                 <Route path="/profile" element={<Profile />} />
@@ -36,6 +39,7 @@ function App() {
                 <Route path="/leave-calendar" element={<LeaveCalendar />} />
                 <Route path="/payroll" element={<Payroll />} />
                 <Route path="/tickets" element={<Tickets />} />
+                <Route path="/coe-requests" element={<COERequests />} />
                 <Route path="/settings" element={<Settings />} />
               </Route>
             </Route>

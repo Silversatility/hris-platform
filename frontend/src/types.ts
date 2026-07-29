@@ -224,6 +224,26 @@ export interface TicketRecord {
   updated_at: string
 }
 
+export interface COERequestRecord {
+  id: number
+  employee: number
+  employee_display_name: string
+  employee_code: string
+  employee_job_title: string
+  employee_department: string
+  employee_branch: string
+  employee_employment_type: string
+  employee_status: string
+  employee_hire_date: string
+  purpose: string
+  status: string
+  reviewed_by: number | null
+  reviewed_by_name: string | null
+  reviewed_at: string | null
+  created_at: string
+  updated_at: string
+}
+
 export interface SiteSettingsRecord {
   logo: string | null
   updated_at: string

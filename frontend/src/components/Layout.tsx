@@ -9,6 +9,7 @@ import {
   CheckBadgeIcon,
   ChevronDownIcon,
   DashboardIcon,
+  DocumentIcon,
   LogoutIcon,
   PeopleIcon,
   PinIcon,
@@ -72,6 +73,7 @@ const NAV_STRUCTURE: NavEntry[] = [
     icon: TicketIcon,
     items: [{ to: '/tickets', label: 'Tickets', icon: TicketIcon }],
   },
+  { type: 'link', to: '/coe-requests', label: 'Documents', icon: DocumentIcon },
   { type: 'link', to: '/settings', label: 'Settings', icon: SettingsIcon },
 ]
 
