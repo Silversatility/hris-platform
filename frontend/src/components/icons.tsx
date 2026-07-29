@@ -239,6 +239,57 @@ export function BellIcon({ className }: IconProps) {
   )
 }
 
+export function BulletListIcon({ className }: IconProps) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" className={className}>
+      <circle cx="4.5" cy="6.5" r="1.25" fill="currentColor" />
+      <circle cx="4.5" cy="12" r="1.25" fill="currentColor" />
+      <circle cx="4.5" cy="17.5" r="1.25" fill="currentColor" />
+      <path
+        d="M9 6.5h11M9 12h11M9 17.5h11"
+        stroke="currentColor"
+        strokeWidth="1.75"
+        strokeLinecap="round"
+      />
+    </svg>
+  )
+}
+
+export function OrderedListIcon({ className }: IconProps) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" className={className}>
+      <path
+        d="M9 6.5h11M9 12h11M9 17.5h11"
+        stroke="currentColor"
+        strokeWidth="1.75"
+        strokeLinecap="round"
+      />
+      <text x="2" y="8.5" fontSize="6" fill="currentColor" stroke="none">
+        1
+      </text>
+      <text x="2" y="14" fontSize="6" fill="currentColor" stroke="none">
+        2
+      </text>
+      <text x="2" y="19.5" fontSize="6" fill="currentColor" stroke="none">
+        3
+      </text>
+    </svg>
+  )
+}
+
+export function QuoteIcon({ className }: IconProps) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" className={className}>
+      <path
+        d="M7.5 8.5c-1.7 0-3 1.3-3 3v4.5h4.5V11H6.5c0-1.1.9-2 2-2v-.5ZM16 8.5c-1.7 0-3 1.3-3 3v4.5h4.5V11H15c0-1.1.9-2 2-2v-.5Z"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinejoin="round"
+      />
+    </svg>
+  )
+}
+
 export function BriefcaseIcon({ className }: IconProps) {
   return (
     <svg viewBox="0 0 24 24" fill="none" className={className}>

@@ -3,13 +3,21 @@ import { useEffect, useState, type FormEvent } from 'react'
 import { apiClient } from '../lib/apiClient'
 import type { BranchOption, DepartmentOption, JobPostingRecord } from '../types'
 import Modal from './Modal'
+import RichTextEditor from './RichTextEditor'
 import Spinner from './Spinner'
 
+const WORK_SETUPS = [
+  { value: 'onsite', label: 'On-site' },
+  { value: 'remote', label: 'Work From Home' },
+  { value: 'hybrid', label: 'Hybrid' },
+]
+
 const EMPLOYMENT_TYPES = [
-  { value: 'full_time', label: 'Full-time' },
-  { value: 'part_time', label: 'Part-time' },
-  { value: 'contract', label: 'Contract' },
-  { value: 'intern', label: 'Intern' },
+  { value: 'regular', label: 'Regular' },
+  { value: 'probationary', label: 'Probationary' },
+  { value: 'contractual', label: 'Contractual' },
+  { value: 'project_based', label: 'Project-based' },
+  { value: 'seasonal', label: 'Seasonal' },
 ]
 
 const STATUSES = [
@@ -22,9 +30,12 @@ interface FormValues {
   title: string
   department: string
   branch: string
+  work_setup: string
   employment_type: string
+  available_slots: string
+  min_salary: string
+  max_salary: string
   description: string
-  requirements: string
   status: string
   closing_date: string
 }
@@ -33,9 +44,12 @@ const EMPTY_VALUES: FormValues = {
   title: '',
   department: '',
   branch: '',
-  employment_type: 'full_time',
+  work_setup: 'onsite',
+  employment_type: 'regular',
+  available_slots: '1',
+  min_salary: '',
+  max_salary: '',
   description: '',
-  requirements: '',
   status: 'open',
   closing_date: '',
 }
@@ -45,9 +59,12 @@ function valuesFromPosting(posting: JobPostingRecord): FormValues {
     title: posting.title,
     department: String(posting.department),
     branch: String(posting.branch),
+    work_setup: posting.work_setup,
     employment_type: posting.employment_type,
+    available_slots: String(posting.available_slots),
+    min_salary: posting.min_salary,
+    max_salary: posting.max_salary,
     description: posting.description,
-    requirements: posting.requirements,
     status: posting.status,
     closing_date: posting.closing_date ?? '',
   }
@@ -115,9 +132,12 @@ function JobPostingFormModal({
       title: values.title,
       department: Number(values.department),
       branch: Number(values.branch),
+      work_setup: values.work_setup,
       employment_type: values.employment_type,
+      available_slots: Number(values.available_slots),
+      min_salary: values.min_salary,
+      max_salary: values.max_salary,
       description: values.description,
-      requirements: values.requirements,
       status: values.status,
       closing_date: values.closing_date || null,
     }
@@ -189,7 +209,21 @@ function JobPostingFormModal({
           </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-3 gap-3">
+          <div>
+            <label className={labelClass()}>Work Setup</label>
+            <select
+              value={values.work_setup}
+              onChange={(e) => setField('work_setup', e.target.value)}
+              className={inputClass()}
+            >
+              {WORK_SETUPS.map((setup) => (
+                <option key={setup.value} value={setup.value}>
+                  {setup.label}
+                </option>
+              ))}
+            </select>
+          </div>
           <div>
             <label className={labelClass()}>Employment Type</label>
             <select
@@ -205,6 +239,47 @@ function JobPostingFormModal({
             </select>
           </div>
           <div>
+            <label className={labelClass()}>Available Slots</label>
+            <input
+              type="number"
+              min={1}
+              required
+              value={values.available_slots}
+              onChange={(e) => setField('available_slots', e.target.value)}
+              className={inputClass()}
+            />
+          </div>
+        </div>
+
+        <div className="grid grid-cols-2 gap-3">
+          <div>
+            <label className={labelClass()}>Minimum Salary</label>
+            <input
+              type="number"
+              min={0}
+              step="0.01"
+              required
+              value={values.min_salary}
+              onChange={(e) => setField('min_salary', e.target.value)}
+              className={inputClass()}
+            />
+          </div>
+          <div>
+            <label className={labelClass()}>Maximum Salary</label>
+            <input
+              type="number"
+              min={0}
+              step="0.01"
+              required
+              value={values.max_salary}
+              onChange={(e) => setField('max_salary', e.target.value)}
+              className={inputClass()}
+            />
+          </div>
+        </div>
+
+        <div className="grid grid-cols-2 gap-3">
+          <div>
             <label className={labelClass()}>Closing Date (optional)</label>
             <input
               type="date"
@@ -213,43 +288,29 @@ function JobPostingFormModal({
               className={inputClass()}
             />
           </div>
+          {isEdit && (
+            <div>
+              <label className={labelClass()}>Status</label>
+              <select
+                value={values.status}
+                onChange={(e) => setField('status', e.target.value)}
+                className={inputClass()}
+              >
+                {STATUSES.map((status) => (
+                  <option key={status.value} value={status.value}>
+                    {status.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
         </div>
 
-        {isEdit && (
-          <div>
-            <label className={labelClass()}>Status</label>
-            <select
-              value={values.status}
-              onChange={(e) => setField('status', e.target.value)}
-              className={inputClass()}
-            >
-              {STATUSES.map((status) => (
-                <option key={status.value} value={status.value}>
-                  {status.label}
-                </option>
-              ))}
-            </select>
-          </div>
-        )}
-
         <div>
-          <label className={labelClass()}>Description</label>
-          <textarea
-            required
-            rows={4}
+          <label className={labelClass()}>Job Description</label>
+          <RichTextEditor
             value={values.description}
-            onChange={(e) => setField('description', e.target.value)}
-            className={inputClass()}
-          />
-        </div>
-
-        <div>
-          <label className={labelClass()}>Requirements (optional)</label>
-          <textarea
-            rows={3}
-            value={values.requirements}
-            onChange={(e) => setField('requirements', e.target.value)}
-            className={inputClass()}
+            onChange={(html) => setField('description', html)}
           />
         </div>
 

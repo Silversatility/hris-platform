@@ -231,10 +231,14 @@ export interface JobPostingRecord {
   department_name: string
   branch: number
   branch_name: string
+  work_setup: string
+  work_setup_display: string
   employment_type: string
   employment_type_display: string
+  available_slots: number
+  min_salary: string
+  max_salary: string
   description: string
-  requirements: string
   status: string
   closing_date: string | null
   posted_by: number | null

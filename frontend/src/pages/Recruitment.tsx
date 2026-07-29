@@ -28,6 +28,16 @@ function postingsUrl(status: string) {
   return status ? `/api/job-postings/?status=${status}` : '/api/job-postings/'
 }
 
+const currencyFormatter = new Intl.NumberFormat('en-PH', {
+  style: 'currency',
+  currency: 'PHP',
+  maximumFractionDigits: 0,
+})
+
+function formatSalaryRange(min: string, max: string) {
+  return `${currencyFormatter.format(Number(min))} – ${currencyFormatter.format(Number(max))}`
+}
+
 function Recruitment() {
   const { user } = useAuth()
   const isStaff = Boolean(user?.is_staff)
@@ -166,8 +176,12 @@ function Recruitment() {
                       </div>
                       <p className="mt-1 text-xs text-[#6b7280]">
                         {posting.department_name} &middot; {posting.branch_name} &middot;{' '}
-                        {posting.employment_type_display}
+                        {posting.work_setup_display} &middot; {posting.employment_type_display}
                         {posting.closing_date && <> &middot; Closes {posting.closing_date}</>}
+                      </p>
+                      <p className="mt-1 text-xs font-semibold text-[#111827]">
+                        {formatSalaryRange(posting.min_salary, posting.max_salary)} &middot;{' '}
+                        {posting.available_slots} slot{posting.available_slots === 1 ? '' : 's'}
                       </p>
                     </button>
 
@@ -200,24 +214,10 @@ function Recruitment() {
 
                   {isExpanded && (
                     <div className="mt-4 space-y-3 border-t border-[#e5e7eb] pt-4 text-sm">
-                      <div>
-                        <h3 className="text-xs font-semibold text-[#6b7280] uppercase">
-                          Description
-                        </h3>
-                        <p className="mt-1 whitespace-pre-line text-[#111827]">
-                          {posting.description}
-                        </p>
-                      </div>
-                      {posting.requirements && (
-                        <div>
-                          <h3 className="text-xs font-semibold text-[#6b7280] uppercase">
-                            Requirements
-                          </h3>
-                          <p className="mt-1 whitespace-pre-line text-[#111827]">
-                            {posting.requirements}
-                          </p>
-                        </div>
-                      )}
+                      <div
+                        className="text-[#111827] [&_blockquote]:border-l-2 [&_blockquote]:border-[#e5e7eb] [&_blockquote]:pl-3 [&_blockquote]:italic [&_blockquote]:text-[#6b7280] [&_h2]:mb-2 [&_h2]:text-base [&_h2]:font-bold [&_h3]:mb-2 [&_h3]:font-bold [&_ol]:list-decimal [&_ol]:pl-5 [&_p]:mb-2 [&_ul]:list-disc [&_ul]:pl-5"
+                        dangerouslySetInnerHTML={{ __html: posting.description }}
+                      />
                       {posting.posted_by_name && (
                         <p className="text-xs text-[#9ca3af]">
                           Posted by {posting.posted_by_name}
