@@ -239,6 +239,21 @@ export function BellIcon({ className }: IconProps) {
   )
 }
 
+export function BriefcaseIcon({ className }: IconProps) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" className={className}>
+      <rect x="3.5" y="7.5" width="17" height="12" rx="1.5" stroke="currentColor" strokeWidth="1.75" />
+      <path
+        d="M8.5 7.5V6a2 2 0 0 1 2-2h3a2 2 0 0 1 2 2v1.5"
+        stroke="currentColor"
+        strokeWidth="1.75"
+        strokeLinejoin="round"
+      />
+      <path d="M3.5 13h17M10.5 13v1.5h3V13" stroke="currentColor" strokeWidth="1.75" strokeLinejoin="round" />
+    </svg>
+  )
+}
+
 export function DocumentIcon({ className }: IconProps) {
   return (
     <svg viewBox="0 0 24 24" fill="none" className={className}>

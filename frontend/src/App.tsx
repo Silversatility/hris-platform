@@ -16,6 +16,7 @@ import NotFound from './pages/NotFound'
 import Payroll from './pages/Payroll'
 import PayslipPrintView from './pages/PayslipPrintView'
 import Profile from './pages/Profile'
+import Recruitment from './pages/Recruitment'
 import Settings from './pages/Settings'
 import Tickets from './pages/Tickets'
 
@@ -39,6 +40,7 @@ function App() {
                 <Route path="/leave-calendar" element={<LeaveCalendar />} />
                 <Route path="/payroll" element={<Payroll />} />
                 <Route path="/tickets" element={<Tickets />} />
+                <Route path="/recruitment" element={<Recruitment />} />
                 <Route path="/coe-requests" element={<COERequests />} />
                 <Route path="/settings" element={<Settings />} />
               </Route>

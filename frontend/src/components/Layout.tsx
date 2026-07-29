@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext'
 import { useSiteSettings } from '../context/SiteSettingsContext'
 import FullScreenLoader from './FullScreenLoader'
 import {
+  BriefcaseIcon,
   BuildingIcon,
   CalendarIcon,
   CheckBadgeIcon,
@@ -73,6 +74,7 @@ const NAV_STRUCTURE: NavEntry[] = [
     icon: TicketIcon,
     items: [{ to: '/tickets', label: 'Tickets', icon: TicketIcon }],
   },
+  { type: 'link', to: '/recruitment', label: 'Recruitment', icon: BriefcaseIcon },
   { type: 'link', to: '/coe-requests', label: 'Documents', icon: DocumentIcon },
   { type: 'link', to: '/settings', label: 'Settings', icon: SettingsIcon },
 ]

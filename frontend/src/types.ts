@@ -224,6 +224,25 @@ export interface TicketRecord {
   updated_at: string
 }
 
+export interface JobPostingRecord {
+  id: number
+  title: string
+  department: number
+  department_name: string
+  branch: number
+  branch_name: string
+  employment_type: string
+  employment_type_display: string
+  description: string
+  requirements: string
+  status: string
+  closing_date: string | null
+  posted_by: number | null
+  posted_by_name: string | null
+  created_at: string
+  updated_at: string
+}
+
 export interface COERequestRecord {
   id: number
   employee: number
