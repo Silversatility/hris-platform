@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     "apps.ticketing",
     "apps.organization",
     "apps.certificates",
+    "apps.recruitment",
 ]
 
 MIDDLEWARE = [
