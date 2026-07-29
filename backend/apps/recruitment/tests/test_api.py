@@ -42,20 +42,33 @@ def job_posting_payload(department, branch):
         "title": "Backend Engineer",
         "department": department.id,
         "branch": branch.id,
-        "employment_type": Employee.EmploymentType.FULL_TIME,
-        "description": "Build and maintain our backend services.",
-        "requirements": "3+ years of Django experience.",
+        "work_setup": JobPosting.WorkSetup.REMOTE,
+        "employment_type": JobPosting.EmploymentType.REGULAR,
+        "available_slots": 2,
+        "min_salary": "19000",
+        "max_salary": "25000",
+        "description": "<p>Build and maintain our backend services.</p>",
     }
 
 
+def create_posting(department, branch, **overrides):
+    defaults = {
+        "title": "Backend Engineer",
+        "department": department,
+        "branch": branch,
+        "work_setup": JobPosting.WorkSetup.REMOTE,
+        "employment_type": JobPosting.EmploymentType.REGULAR,
+        "available_slots": 1,
+        "min_salary": "19000",
+        "max_salary": "25000",
+        "description": "<p>Build things.</p>",
+    }
+    defaults.update(overrides)
+    return JobPosting.objects.create(**defaults)
+
+
 def test_anyone_authenticated_can_list_job_postings(regular_user, department, branch):
-    JobPosting.objects.create(
-        title="Backend Engineer",
-        department=department,
-        branch=branch,
-        employment_type=Employee.EmploymentType.FULL_TIME,
-        description="Build things.",
-    )
+    create_posting(department, branch)
     client = APIClient()
     client.force_authenticate(regular_user)
 
@@ -84,19 +97,28 @@ def test_staff_can_create_job_posting(staff_employee, department, branch):
     body = response.json()
     assert body["title"] == "Backend Engineer"
     assert body["status"] == "open"
+    assert body["work_setup_display"] == "Work From Home"
+    assert body["employment_type_display"] == "Regular"
+    assert body["available_slots"] == 2
     assert body["department_name"] == "Engineering"
     assert body["branch_name"] == branch.name
     assert body["posted_by_name"] == "hr@example.com"
 
 
+def test_max_salary_must_be_at_least_min_salary(staff_employee, department, branch):
+    client = APIClient()
+    client.force_authenticate(staff_employee.user)
+    payload = job_posting_payload(department, branch)
+    payload["min_salary"] = "30000"
+    payload["max_salary"] = "25000"
+
+    response = client.post(reverse("jobposting-list"), payload)
+
+    assert response.status_code == 400
+
+
 def test_staff_can_update_job_posting_status(staff_employee, department, branch):
-    posting = JobPosting.objects.create(
-        title="Backend Engineer",
-        department=department,
-        branch=branch,
-        employment_type=Employee.EmploymentType.FULL_TIME,
-        description="Build things.",
-    )
+    posting = create_posting(department, branch)
     client = APIClient()
     client.force_authenticate(staff_employee.user)
 
@@ -110,13 +132,7 @@ def test_staff_can_update_job_posting_status(staff_employee, department, branch)
 
 
 def test_non_staff_cannot_update_job_posting(regular_user, department, branch):
-    posting = JobPosting.objects.create(
-        title="Backend Engineer",
-        department=department,
-        branch=branch,
-        employment_type=Employee.EmploymentType.FULL_TIME,
-        description="Build things.",
-    )
+    posting = create_posting(department, branch)
     client = APIClient()
     client.force_authenticate(regular_user)
 
@@ -128,13 +144,7 @@ def test_non_staff_cannot_update_job_posting(regular_user, department, branch):
 
 
 def test_staff_can_delete_job_posting(staff_employee, department, branch):
-    posting = JobPosting.objects.create(
-        title="Backend Engineer",
-        department=department,
-        branch=branch,
-        employment_type=Employee.EmploymentType.FULL_TIME,
-        description="Build things.",
-    )
+    posting = create_posting(department, branch)
     client = APIClient()
     client.force_authenticate(staff_employee.user)
 
@@ -145,22 +155,8 @@ def test_staff_can_delete_job_posting(staff_employee, department, branch):
 
 
 def test_list_can_filter_by_status(staff_employee, department, branch):
-    JobPosting.objects.create(
-        title="Open Role",
-        department=department,
-        branch=branch,
-        employment_type=Employee.EmploymentType.FULL_TIME,
-        description="Build things.",
-        status=JobPosting.Status.OPEN,
-    )
-    JobPosting.objects.create(
-        title="Filled Role",
-        department=department,
-        branch=branch,
-        employment_type=Employee.EmploymentType.FULL_TIME,
-        description="Build things.",
-        status=JobPosting.Status.FILLED,
-    )
+    create_posting(department, branch, title="Open Role", status=JobPosting.Status.OPEN)
+    create_posting(department, branch, title="Filled Role", status=JobPosting.Status.FILLED)
     client = APIClient()
     client.force_authenticate(staff_employee.user)
 

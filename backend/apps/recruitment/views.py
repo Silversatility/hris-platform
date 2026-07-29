@@ -12,7 +12,7 @@ class JobPostingViewSet(viewsets.ModelViewSet):
     )
     serializer_class = JobPostingSerializer
     permission_classes = [permissions.IsAuthenticated, IsStaffOrReadOnly]
-    filterset_fields = ["status", "department", "branch", "employment_type"]
+    filterset_fields = ["status", "department", "branch", "employment_type", "work_setup"]
 
     def perform_create(self, serializer):
         serializer.save(posted_by=getattr(self.request.user, "employee", None))

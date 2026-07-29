@@ -9,16 +9,31 @@ class JobPosting(models.Model):
         CLOSED = "closed", "Closed"
         FILLED = "filled", "Filled"
 
+    class WorkSetup(models.TextChoices):
+        ONSITE = "onsite", "On-site"
+        REMOTE = "remote", "Work From Home"
+        HYBRID = "hybrid", "Hybrid"
+
+    class EmploymentType(models.TextChoices):
+        REGULAR = "regular", "Regular"
+        PROBATIONARY = "probationary", "Probationary"
+        CONTRACTUAL = "contractual", "Contractual"
+        PROJECT_BASED = "project_based", "Project-based"
+        SEASONAL = "seasonal", "Seasonal"
+
     title = models.CharField(max_length=150)
     department = models.ForeignKey(
         Department, on_delete=models.PROTECT, related_name="job_postings"
     )
     branch = models.ForeignKey(Branch, on_delete=models.PROTECT, related_name="job_postings")
-    employment_type = models.CharField(
-        max_length=20, choices=Employee.EmploymentType.choices
+    work_setup = models.CharField(
+        max_length=20, choices=WorkSetup.choices, default=WorkSetup.ONSITE
     )
+    employment_type = models.CharField(max_length=20, choices=EmploymentType.choices)
+    available_slots = models.PositiveIntegerField(default=1)
+    min_salary = models.DecimalField(max_digits=12, decimal_places=2, default=0)
+    max_salary = models.DecimalField(max_digits=12, decimal_places=2, default=0)
     description = models.TextField()
-    requirements = models.TextField(blank=True)
     status = models.CharField(
         max_length=20, choices=Status.choices, default=Status.OPEN, db_index=True
     )
